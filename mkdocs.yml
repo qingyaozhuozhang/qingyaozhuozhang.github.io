@@ -1,203 +1,124 @@
-site_name: XJU-Hurricane-docs
-site_description: 新疆大学飓风战队文档站
-site_url: https://xju-hurricane-team.github.io
-repo_url: https://github.com/XJU-Hurricane-Team/xju-hurricane-team.github.io
-edit_uri: edit/main/docs/
+# ==========================================
+# 站点基本信息 (已修改)
+# ==========================================
+site_name: 镜神的知识网络
+site_description: 连接思维的节点，构建第二大脑
+# 你的仓库名是 jingshen.github.io，通常部署地址是这个：
+site_url: https://qingyaozhuozhang.github.io/ 
+# 源码仓库地址
+repo_url: https://github.com/qingyaozhuozhang/jingshen.github.io
+repo_name: GitHub
 
+# ==========================================
+# 主题配置
+# ==========================================
 theme:
   name: material
-  custom_dir: overrides
-  font:
-    # false # 国内网络访问 Google 源可能会有问题
-    text: "Noto Sans SC - local"
-    # code: Roboto Mono
-  palette:
-    - media: "(prefers-color-scheme: light)" # 检查用户系统配置是否为亮色
-      scheme: default # 亮色模式
-      primary: white # 基本颜色
-      accent: blue # 按钮等互动块的颜色
-      toggle:
-        icon: material/eye
-        name: 切换暗色模式
-    - media: "(prefers-color-scheme: dark)" # 检查用户系统配置是否为暗色
-      scheme: slate # 暗色模式
-      primary: black # 基本颜色
-      accent: blue # 按钮等互动块的颜色
-      toggle:
-        icon: material/eye-outline
-        name: 切换亮色模式
   language: zh
-  logo: img/logo-banner.png
-  favicon: img/logo.png
+  # logo: assets/logo.png
+  # favicon: assets/favicon.png
+
   features:
-    - content.code.copy # 代码块复制按钮
-    - content.action.edit # 文章编辑按钮
-    #- navigation.instant # Instant loading，像个单页应用
-    - navigation.tracking # Anchor tracking
-    - navigation.tabs # 导航栏
-    - navigation.footer # 上一篇 / 下一篇导航按钮
-    #- navigation.tabs.sticky # 导航栏不随页面滚动隐藏
-    # - navigation.sections # 侧边栏分组显示
-    #- navigation.expand # 导航栏自动展开
-    - navigation.indexes # 组标题有专属页面
-    - toc.follow # 目录自动跟随
-    - navigation.top # 返回顶部按钮
-    - search.suggest # 搜索推荐
-    #- navigation.prune # 导航修剪，仅渲染可见链接，优化文档数量超过100的站点（实验），会导致页面间跳转速度变慢
-    - search.highlight
-  icon:
-    repo: material/github
-    #edit: material/pencil
+    - navigation.tabs        
+    - navigation.tabs.sticky 
+    - navigation.sections    
+    - navigation.expand      
+    - navigation.top         
+    - navigation.tracking    
+    - navigation.indexes     
+    - toc.follow             
+    - search.suggest         
+    - search.highlight       
+    - content.code.copy      
+    - content.action.edit    
 
+  palette:
+    # 亮色模式
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white         
+      accent: indigo         
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至深色模式
+
+    # 深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate          
+      primary: black         
+      accent: teal           
+      toggle:
+        icon: material/weather-night
+        name: 切换至亮色模式
+
+  font:
+    text: Noto Sans SC
+    code: JetBrains Mono     
+
+# ==========================================
+# 插件配置
+# ==========================================
 plugins:
-  - i18n:
-      docs_structure: folder
-      fallback_to_default: true
-      languages:
-        - locale: zh
-          default: true
-          name: 简体中文
-          build: true
   - search
-  - minify:
+  - git-revision-date-localized:
+      type: date             
+      locale: zh             
+      enable_creation_date: false # 只显示最后更新日期
+      fallback_to_build_date: true 
+  - minify:                  
       minify_html: true
-      minify_js: true
-      minify_css: true
-      htmlmin_opts:
-        remove_comments: true
-      cache_safe: true
 
-extra:
-  generator: false
-  social:
-    - name: Github
-      link: https://github.com/XJU-Hurricane-Team
-      icon: fontawesome/brands/github
-    - name: Bilibili
-      link: https://space.bilibili.com/522132031/
-      icon: fontawesome/brands/bilibili
-    - name: 微信公众号
-      link: https://mp.weixin.qq.com/mp/qrcode?scene=10000004&size=102&__biz=MzkzNDYwNDAzMQ==&mid=2247483740&idx=1&sn=7d8b41e41cfe7f3100435bfbffd562e0&send_time=
-      icon: fontawesome/brands/weixin
-
+# ==========================================
+# Markdown 扩展
+# ==========================================
 markdown_extensions:
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.betterem
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - attr_list
+  - admonition               
+  - pymdownx.details         
+  - attr_list                
   - md_in_html
-  - admonition #MkDocs 警告框
-  - footnotes #脚注
-  - meta #自定义文章元数据
-  - pymdownx.caret #下划线
-  - pymdownx.mark #文本高亮
-  - pymdownx.tilde #删除线
-  - mdx_truly_sane_lists
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.superfences:
+  - pymdownx.superfences:    
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:      
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:       
+      custom_checkbox: true
+  - pymdownx.arithmatex:     
+      generic: true
+  - pymdownx.emoji:          
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
+# ==========================================
+# 额外脚本
+# ==========================================
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js
-  - javascripts/mathjax.js #https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/latest.min.js
+  - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - javascripts/tex-mml-chtml.js #https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - javascripts/embed.js # https://viewer.altium.com/client/static/js/embed.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
-extra_css:
-  - stylesheets/extra.css
-
-#############################################################
-#############################################################
-#############################################################
-
+# ==========================================
+# 导航结构
+# ==========================================
 nav:
-  - Home: index.md
-  - About:
-      - WELCOME COME TO HURRICANE!: About/index.md
-      - 如何参与战队文档编辑: About/如何参与.md
-      - 战队文档规范: About/文档规范.md
-  - 电控:
-      - 电控: Electrical/index.md
-      - C语言:
-          - C语言基础: https://deadline039.github.io/C/
-          - C编码风格与规范: Electrical/C语言/Program-Design/C-code-style.md
-      - STM32: 
-          - Stm32: Electrical/Stm32/index.md
-          - Stm32基础: Electrical/Stm32/Stm32基础.md
-          - Stm32开发: Electrical/Stm32/Stm32开发.md
-          - 启动过程: Electrical/Stm32/启动过程.md
-      - RTOS:
-          - FreeRTOS: Electrical/RTOS/FreeRTOS.md
-      - Motors: Electrical/Motors/电机简介.md
+  - 🏠 首页: index.md
+  - 🧠 核心知识:
+      - 编程语言:
+          - Python: tech/python/index.md
+          - C++: tech/cpp/index.md
+      - 算法笔记: tech/algo.md
+  - 🛠️ 战队文档:
+      - 电控组: Electrical/index.md
+      - 视觉组: Vision/index.md
+      - 机械组: Mechanical/index.md
+  - 💭 随笔:
+      - 2024年随想: thoughts/2024.md
+  - ℹ️ 关于我们: about.md
 
-      - 其他:
-          - 电控基础: Electrical/Other/电控基础.md
-          - 树莓派: Electrical/Other/树莓派.md
-          - MCUViewer使用方法: Electrical/Other/MCUViewer使用方法.md
-  - 视觉:
-      - 视觉: Vision/index.md
-      - 导航:
-        - 导航主线:
-          - ROS2主流程: Vision/navigation/ROS2/导航_主线/ROS2主流程.md
-          - Navigation2导航框架: Vision/navigation/ROS2/导航_主线/Navigation2导航框架.md
-          - 北极熊Nav2框架: Vision/navigation/ROS2/导航_主线/北极熊Nav2框架.md
-        - 导航支线:
-          - 基础编程: Vision/navigation/ROS2/导航_支线/ROS2基础编程.md
-          - 类的封装和调用: Vision/navigation/ROS2/导航_支线/类的封装和调用.md
-          - Launch文件的编写: Vision/navigation/ROS2/导航_支线/launch文件的编写.md
-          - 常用开发工具: Vision/navigation/ROS2/导航_支线/ROS2常用开发工具.md
-        - 雷达定位: 
-          - Mid-360激光雷达配置教程: Vision/navigation/lidar/Mid-360激光雷达配置教程.md
-          - 雷达定位信息: Vision/navigation/lidar/雷达定位信息.md
-      - 深度学习: 
-        - 知识点: Vision/深度学习/知识点.md
-        - 实践结果: Vision/深度学习/实践结果.md
-      - 强化学习: Vision/强化学习.md
-      - 工具使用简介: Vision/工具.md
-  - 机械:
-      - 关于机械: Mechanical/index.md
-      - 机械1:
-          - 机械1-1: Mechanical/Mechanical1-1.md
-          - 机械1-2: Mechanical/Mechanical1-2.md
-      - 机械2:
-          - 机械1-1: Mechanical/Mechanical1-1.md
-          - 机械1-2: Mechanical/Mechanical1-2.md
-  - 电路:
-      - 关于电路: Circuit/index.md
-      - 元器件基础: 
-          - 电阻: Circuit/元器件基础/电阻.md
-          - 电容: Circuit/元器件基础/电容.md
-          - 电感: Circuit/元器件基础/电感.md
-          - Diode: Circuit/元器件基础/Diode.md
-          - BJT: Circuit/元器件基础/BJT.md
-          - MOSFET: Circuit/元器件基础/MOSFET.md
-          - IGBT: Circuit/元器件基础/IGBT.md
-      - 电驱: 
-          - FOC学习-硬件版: Circuit/电驱/FOC学习-硬件版.md
-      - 电源:
-          - MP5048并联大功率稳压电源: Circuit/电源/MP5048并联大功率稳压电源.md
-      - 其他:
-          - 常用外设引脚顺序: Circuit/其他/常用外设引脚顺序.md
-          - F4-ADS遥控器: Circuit/其他/F4-ADS遥控器.md
-          - XJU-2026分电板: Circuit/其他/2026分电板V1.0.md
-          - XJU-ESP32开发板: Circuit/其他/xju-ESP32 1.0.md
-          - 无线急停: Circuit/其他/xju_wireless-emergency-stop.md
-  - 其它:
-      - 关于其它: Other/index.md
-      - 电池充放电: Other/电池冲放电.md
-      - 战队共享文件连接: Other/战队共享文档连接教程.md
-      - 打印机使用教程: Other/打印机使用教程.md
-      - Jlink固件烧录教程: Other/Jlink固件烧录教程.md
-  - 友链:
-      - 友链: 友链/index.md
-      - Deadline039's blog: https://deadline039.github.io/
-      - PickingChip's blog: https://pickingchip.github.io/
+copyright: Copyright &copy; 2024 镜神 | Powered by MkDocs Material
