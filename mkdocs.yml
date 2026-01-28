@@ -130,7 +130,7 @@ nav:
                 - launch文件的编写: navigation/ROS2/导航_支线/launch文件的编写.md
                 - 类的封装和调用: navigation/ROS2/导航_支线/类的封装和调用.md
   - 🛠️ 日常工具扩展:
-      - 工具资料源: Electrical/index.md
+      - 工具链接: 日常工具扩展/工具链接.md
+      - 知识性资料链接: 日常工具扩展/知识性资料链接.md
   - 💭 常用例程:
       - 例程: thoughts/2024.md
-  - ℹ️ 关于我们: about.md
