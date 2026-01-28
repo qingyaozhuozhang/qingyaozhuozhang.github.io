@@ -70,6 +70,13 @@ https://github.com/qingyaozhuozhang/jingshen/tree/main/Github_Page
   - 部署地址需要对应
   - `site_url: https://qingyaozhuozhang.github.io/`
   - 编辑内容在`nav`模块中
+  
+    - （冒号后面不能放空白）
+    - ```
+      编程常用例程:    （不行）
+      编程常用例程:    （行）
+        待更新：常用例程/编程常用例程/index.md
+      ```
   - 路径从`docs/`之后开始`docs/`不需要
 - 上传遇到语法错误而无法显示
   - 到`Actions`选项中查看具体报错
