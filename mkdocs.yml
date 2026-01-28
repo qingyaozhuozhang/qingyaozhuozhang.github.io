@@ -4,7 +4,7 @@
 site_name: 镜神的知识网络
 site_description: 连接思维的节点，构建第二大脑
 # 你的仓库名是 jingshen.github.io，通常部署地址是这个：
-site_url: https://qingyaozhuozhang.github.io/ 
+site_url: https://qingyaozhuozhang.github.io/jingshen.github.io/
 # 源码仓库地址
 repo_url: https://github.com/qingyaozhuozhang/jingshen.github.io
 repo_name: GitHub
