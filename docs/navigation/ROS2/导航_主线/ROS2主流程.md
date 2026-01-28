@@ -461,4 +461,4 @@ ros2 param --help
 
 # ROS2学习代码跑通的版本
 
-https://github.com/XJU-Hurricane-Team/Vision_coding
+https://github.com/qingyaozhuozhang/jingshen/tree/main/ROS2_learning

@@ -765,6 +765,4 @@ void OmniPidPursuitController::applyCurvatureLimitation(...)
 
 # 北极熊代码跑通的版本
 
-
-
-https://github.com/XJU-Hurricane-Team/Vision_coding
+https://github.com/qingyaozhuozhang/jingshen/tree/main/beijixiong
