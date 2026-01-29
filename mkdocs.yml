@@ -110,28 +110,43 @@ extra_javascript:
 nav:
   - 🏠 首页: index.md
   - 🧠 核心知识:
+      - 视觉:
+        - 深度学习:
+          - 知识点: 视觉/深度学习/知识点.md
+          - 实践结果: 视觉/深度学习/实践结果.md
+        - Linux:
+          - Linux知识点: 视觉/Linux/Linux知识点.md
+          - git知识点: 视觉/Linux/git知识点.md
+        - opencv:
+          - opencv知识点: 视觉/opencv/opencv知识点.md
+      - 导航:
+        - 雷达:
+          - Mid-360激光雷达配置教程: navigation/lidar/Mid-360激光雷达配置教程.md
+          - 雷达定位信息: navigation/lidar/雷达定位信息.md
+        - ROS2:
+          - 导航主线:
+            - ROS2主流程: navigation/ROS2/导航_主线/ROS2主流程.md
+            - Navigation2导航框架: navigation/ROS2/导航_主线/Navigation2导航框架.md
+            - 北极熊Nav2框架: navigation/ROS2/导航_主线/北极熊Nav2框架.md
+          - 导航支线:
+            - ROS2基础编程: navigation/ROS2/导航_支线/ROS2基础编程.md
+            - ROS2常用开发工具: navigation/ROS2/导航_支线/ROS2常用开发工具.md
+            - launch文件的编写: navigation/ROS2/导航_支线/launch文件的编写.md
+            - 类的封装和调用: navigation/ROS2/导航_支线/类的封装和调用.md
       - 编程:
-          - 视觉:
-            - 深度学习:
-              - 知识点: 视觉/深度学习/知识点.md
-              - 实践结果: 视觉/深度学习/实践结果.md
-          - 导航:
-            - 雷达:
-              - Mid-360激光雷达配置教程: navigation/lidar/Mid-360激光雷达配置教程.md
-              - 雷达定位信息: navigation/lidar/雷达定位信息.md
-            - ROS2:
-              - 导航主线:
-                - ROS2主流程: navigation/ROS2/导航_主线/ROS2主流程.md
-                - Navigation2导航框架: navigation/ROS2/导航_主线/Navigation2导航框架.md
-                - 北极熊Nav2框架: navigation/ROS2/导航_主线/北极熊Nav2框架.md
-              - 导航支线:
-                - ROS2基础编程: navigation/ROS2/导航_支线/ROS2基础编程.md
-                - ROS2常用开发工具: navigation/ROS2/导航_支线/ROS2常用开发工具.md
-                - launch文件的编写: navigation/ROS2/导航_支线/launch文件的编写.md
-                - 类的封装和调用: navigation/ROS2/导航_支线/类的封装和调用.md
+        - python:
+          - 核心基础语法: 编程/python/核心基础语法.md
+          - 高级编程: 编程/python/高级编程.md
+          - 前端基础: 编程/python/前端基础.md
+          - 爬虫基础: 编程/python/爬虫基础.md
+          - 算法与数据结构: 编程/python/算法与数据结构.md
+        - C:
+          - 核心基础语法: 编程/C/核心基础语法.md
+          - C语言编码风格与规范: 编程/C/C语言编码风格与规范.md
   - 🛠️ 日常工具扩展:
       - 工具链接: 日常工具扩展/工具链接.md
       - 知识性资料链接: 日常工具扩展/知识性资料链接.md
+      - Markdown语法编写笔记的基础操作: 日常工具扩展/Markdown语法编写笔记的基础操作.md
   - 💭 常用例程:
       - 生活常用例程:
         - git上传Github远程仓库: 常用例程/生活常用例程/git.md
