@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Gemini Premium Design System for MkDocs
+   Theme: Modern Minimalist (Indo-Slate)
+   Features: Glassmorphism, Card UI, Hover Micro-interactions
+   ========================================================================== */
+
+/* --- 1. 全局设计变量定义 --- */
+:root {
+    /* 阴影系统：更细腻的层次感 */
+    --card-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);       /* 静态时 */
+    --card-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);      /* 悬浮时 */
+    
+    /* 圆角系统：现代 UI 趋向于更大的圆角 */
+    --card-radius: 16px;
+    
+    /* 动画系统 */
+    --transition-speed: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 亮色模式配置 (Light Mode) */
+[data-md-color-scheme="default"] {
+    --md-default-bg-color: #f2f4f7;        /* 网页底色：高级灰白 */
+    --md-main-bg-color:    #ffffff;        /* 卡片底色：纯白 */
+    --glass-bg: rgba(255, 255, 255, 0.85); /* 毛玻璃背景 */
+    --border-color: rgba(0, 0, 0, 0.06);   /* 卡片极淡边框 */
+    --heading-border: linear-gradient(to right, var(--md-accent-fg-color), transparent);
+}
+
+/* 深色模式配置 (Dark Mode) */
+[data-md-color-scheme="slate"] {
+    --md-default-bg-color: #0b0e14;        /* 网页底色：深邃黑 */
+    --md-main-bg-color:    #1e2129;        /* 卡片底色：暗灰 */
+    --glass-bg: rgba(30, 33, 41, 0.85);    /* 毛玻璃背景 */
+    --border-color: rgba(255, 255, 255, 0.06);
+    --heading-border: linear-gradient(to right, var(--md-accent-fg-color), transparent);
+}
+
+/* --- 2. 顶栏毛玻璃特效 (Header Glassmorphism) --- */
+.md-header {
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: saturate(180%) blur(20px); /* 核心模糊滤镜 */
+    -webkit-backdrop-filter: saturate(180%) blur(20px); /* Safari 支持 */
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* 修正亮色模式下顶栏文字颜色，确保清晰 */
+[data-md-color-scheme="default"] .md-header {
+    color: #1a1a1a;
+}
+/* 搜索框背景微调 */
+.md-search__input {
+    background-color: rgba(0,0,0,0.05) !important;
+}
+
+/* --- 3. 布局与卡片化核心 (Card Layout) --- */
+
+/* 桌面端大屏布局优化 */
+@media screen and (min-width: 76.25em) {
+    .md-main__inner {
+        display: flex;
+        gap: 1.5rem;          /* 增加模块间距，呼吸感更强 */
+        max-width: 1400px;    /* 适当加宽内容区，展示更多代码 */
+        margin: 0 auto;
+    }
+}
+
+/* 通用卡片样式 Mixin (应用于内容区和侧边栏) */
+.md-content, 
+.md-sidebar__scrollwrap {
+    background-color: var(--md-main-bg-color);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+}
+
+/* 中间内容区专属 */
+.md-content {
+    padding: 2.5rem 3rem; /* 大留白，杂志级阅读体验 */
+    margin-bottom: 2rem;
+}
+
+/* 侧边栏专属 (导航和目录) */
+@media screen and (min-width: 60em) {
+    .md-sidebar {
+        height: fit-content; /* 高度自适应内容 */
+    }
+    
+    .md-sidebar__scrollwrap {
+        padding: 1rem;
+        margin: 0;
+        max-height: calc(100vh - 7rem); /* 防止过长 */
+    }
+
+    /* 悬浮微交互：鼠标滑过时卡片“浮起” */
+    .md-sidebar:hover .md-sidebar__scrollwrap,
+    .md-content:hover {
+        box-shadow: var(--card-shadow-md); /* 阴影加深 */
+        border-color: var(--md-accent-fg-color); /* 边框变色 */
+        /* transform: translateY(-2px); 可选：轻微上浮，若觉得晃眼可注释掉 */
+    }
+}
+
+/* --- 4. 细节排版美化 (Typography & Elements) --- */
+
+/* H1 标题：高级渐变下划线 */
+.md-typeset h1 {
+    font-weight: 800;
+    color: var(--md-accent-fg-color);
+    letter-spacing: -0.01em;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid transparent;
+    border-image: var(--heading-border) 1;
+    margin-bottom: 1.5rem;
+}
+
+/* H2/H3 标题优化 */
+.md-typeset h2 {
+    font-weight: 700;
+    margin-top: 2.5em;
+}
+
+/* 链接美化：悬浮下划线动画 */
+.md-typeset a {
+    color: var(--md-accent-fg-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-bottom: 1px solid transparent;
+}
+.md-typeset a:hover {
+    color: var(--md-accent-fg-color);
+    border-bottom-color: var(--md-accent-fg-color);
+}
+
+/* 代码块美化：Mac 终端窗口风格 */
+.highlight pre {
+    border-radius: 12px;
+    box-shadow: var(--card-shadow-sm);
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+}
+.md-typeset pre > code {
+    font-family: "JetBrains Mono", monospace; /* 强制等宽字体 */
+}
+
+/* 提示框 (Admonition) 扁平化 */
+.md-typeset .admonition, 
+.md-typeset details {
+    border: none;
+    border-left: 4px solid var(--md-admonition-fg-color, var(--md-accent-fg-color));
+    background-color: rgba(127, 127, 127, 0.04); /* 极淡背景 */
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+/* 表格美化 */
+.md-typeset table:not([class]) {
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden; /* 保证圆角可见 */
+    display: inline-block; /* 防止表格过宽撑破布局 */
+    max-width: 100%;
+}
+.md-typeset table:not([class]) th {
+    background-color: rgba(127, 127, 127, 0.05);
+}
+
+/* 滚动条美化 (Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* --- 5. 移动端适配 (Mobile Reset) --- */
+@media screen and (max-width: 60em) {
+    /* 移动端取消卡片样式，回归沉浸式全屏，节省屏幕空间 */
+    .md-content {
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        padding: 1.2rem;
+        background: transparent;
+    }
+    .md-sidebar__scrollwrap {
+        box-shadow: none;
+        border: none;
+        background: transparent;
+    }
+}

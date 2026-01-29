@@ -11,52 +11,60 @@ repo_url: https://github.com/qingyaozhuozhang/qingyaozhuozhang.github.io
 repo_name: GitHub
 
 # ==========================================
-# 主题配置
-# ===================================
+# 主题配置 (Design by Gemini: Modern Minimalist)
+# ==========================================
 theme:
   name: material
   language: zh
-  # logo: assets/logo.png
+  # logo: assets/logo.png # 建议后续添加一个简洁的 SVG Logo
   # favicon: assets/favicon.png
 
   features:
-    - navigation.tabs        
-    - navigation.tabs.sticky 
-    - navigation.sections    
-    - navigation.expand      
-    - navigation.top         
-    - navigation.tracking    
-    - navigation.indexes     
-    - toc.follow             
-    - search.suggest         
-    - search.highlight       
-    - content.code.copy      
-    - content.action.edit    
+    - navigation.tabs           # 顶级菜单栏
+    - navigation.tabs.sticky    # 菜单栏吸顶 (配合 CSS 实现毛玻璃)
+    - navigation.sections       # 侧边栏分组
+    - navigation.expand         # 默认展开
+    - navigation.top            # 【新增】回到顶部按钮
+    - navigation.tracking       # 滚动锚点定位
+    - navigation.indexes        # 目录索引支持
+    - toc.follow                # 右侧目录自动跟随
+    - search.suggest            # 搜索智能建议
+    - search.share              # 【新增】搜索分享
+    - search.highlight          # 搜索关键词高亮
+    - content.code.copy         # 代码块复制按钮
+    - content.action.edit       # 页面编辑按钮
+    - content.tooltips          # 【新增】提示词支持
 
   palette:
-    # 亮色模式
+    # 亮色模式：纯净白 + 靛蓝 (专业、冷静)
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: white         
-      accent: indigo         
+      primary: white          # 顶栏白色，为毛玻璃效果做铺垫
+      accent: indigo          # 强调色：靛蓝
       toggle:
         icon: material/weather-sunny
         name: 切换至深色模式
 
-    # 深色模式
+    # 深色模式：板岩灰 + 靛蓝 (护眼、极客)
     - media: "(prefers-color-scheme: dark)"
-      scheme: slate          
-      primary: black         
-      accent: teal           
+      scheme: slate
+      primary: black          # 顶栏黑色
+      accent: indigo
       toggle:
         icon: material/weather-night
         name: 切换至亮色模式
 
   font:
-    text: Noto Sans SC
-    code: JetBrains Mono     
+    text: "Noto Sans SC"      # 正文：思源黑体
+    code: "JetBrains Mono"    # 代码：JetBrains Mono
 
-# ===================================
+# ==========================================
+# 额外 CSS 配置
+# ==========================================
+extra_css:
+  - stylesheets/extra.css
+
+# ==========================================
 # 插件配置
 # ==========================================
 plugins:
@@ -64,14 +72,14 @@ plugins:
   - git-revision-date-localized:
       type: date             
       locale: zh             
-      enable_creation_date: false # 只显示最后更新日期
+      enable_creation_date: false 
       fallback_to_build_date: true 
   - minify:                  
       minify_html: true
 
 # ==========================================
 # Markdown 扩展
-# ===================================
+# ==========================================
 markdown_extensions:
   - admonition               
   - pymdownx.details         
@@ -105,7 +113,7 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 # ==========================================
-# 导航结构
+# 导航结构 (保持原有结构不变)
 # ==========================================
 nav:
   - 🏠 首页: index.md
