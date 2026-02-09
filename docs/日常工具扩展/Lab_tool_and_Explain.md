@@ -177,7 +177,7 @@ https://blog.csdn.net/2301_77160836/article/details/139028775?ops_request_misc=%
 
   - 相对位置调整
 
-    - ![](/home/chairman/RC_26/document/rc_picture/location.png)
+    - ![](./picture/location.png)
 
     - 坐上角的两个按键可以直接对模块进行`x`、`y`、`z`、`roll`, `pitch`, `yaw`的位置调节
 
