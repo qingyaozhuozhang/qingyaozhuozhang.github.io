@@ -46,5 +46,7 @@ git push origin main
 
 6.github强制覆盖本地
 
-`git fetch --all
-git reset --hard origin/main`
+`git fetch --all`
+
+`git reset --hard origin/main`
+
