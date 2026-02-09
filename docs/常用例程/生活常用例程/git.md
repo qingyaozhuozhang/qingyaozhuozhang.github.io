@@ -42,4 +42,9 @@ git push origin main
 
 5.克隆仓库
 
-git clone git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git
+`git clone git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git`
+
+6.github强制覆盖本地
+
+`git fetch --all
+git reset --hard origin/main`
