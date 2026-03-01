@@ -38,7 +38,8 @@ git push origin main
 
 4.在整个文件夹的根目录下，想要上传单个文件夹
 
-`git add docs/`
+- `git add docs/`
+- 如果没有之前仓库里面的东西，只有单一一个文件夹，就必须`git clone`下来，然后上传
 
 5.克隆仓库
 
@@ -49,4 +50,11 @@ git push origin main
 `git fetch --all`
 
 `git reset --hard origin/main`
+
+7.修改仓库错误，需要回退
+
+- 打开github仓库主页右侧的`Commits`找到之前的`Commit Hash`
+  - 或者在终端中输入`git reflog`
+- `git reset --hard <你的Hash>`
+- 回退到之前的内容，但是本地新增加的那个文件夹不会删除
 
