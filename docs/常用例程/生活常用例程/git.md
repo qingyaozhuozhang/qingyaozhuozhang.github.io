@@ -2,13 +2,30 @@
 
 - **正常流程**
 
-```
-git init
-git add .
-git commit -m "说明"
-git remote add origin git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git
-git push origin main
-```
+  - 首次提交
+  - 
+
+  ```
+  git init
+  git add .
+  git commit -m "说明"
+  git remote add origin git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git
+  git push origin main
+  ```
+
+  - 二次提交
+  - 
+
+  ```
+  git clone ...
+  git add .
+  git commit -m "解决合并冲突"
+  git pull origin main --allow-unrelated-histories
+  git add .
+  git commit -m "进行的修改"
+  git push origin main
+  ```
+
 
 - **非正常问题说明**
 
@@ -30,9 +47,13 @@ git push origin main
 
 （1）正常
 
+`git pull origin main`
+
+（2）遇到合并情况
+
 `git pull --rebase origin main`（`--rebase`保持提交历史是一条干净的支线，而不是充满复杂的"Merge branch.."的记录）
 
-（2）遇到`refusing to merge unrelated histories`问题
+（3）遇到`refusing to merge unrelated histories`问题
 
 `git pull origin main --allow-unrelated-histories`（合并两个完全独立、没有共同祖先的仓库）
 
