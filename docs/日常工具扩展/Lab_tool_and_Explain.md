@@ -1,144 +1,141 @@
 # 工具及其说明
 
-### 工具
+### **工具**
 
 - urdf在线查看工具
   - https://viewer.robotsfan.com/
 - Pycharm专业破解版
 
-pycharm的2024.1.1版本
-
-https://blog.csdn.net/2301_77160836/article/details/139028775?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522152c7f65df49c5188f74f2013b103c6b%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=152c7f65df49c5188f74f2013b103c6b&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-139028775-null-null.nonecase&utm_term=pychram&spm=1018.2226.3001.4450
+[pycharm的2024.1.1版本](https://blog.csdn.net/2301_77160836/article/details/139028775?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522152c7f65df49c5188f74f2013b103c6b%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=152c7f65df49c5188f74f2013b103c6b&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-139028775-null-null.nonecase&utm_term=pychram&spm=1018.2226.3001.4450)
 
 
 
 
 
-### 说明
+### **说明**
 
-- ### Rviz2
+### Rviz2
 
-  - **常见问题说明**
+- **常见问题说明**
 
-  - 时间同步
-    - 仿真时间和系统时间需要同步，否则无法正常初始化
+- 时间同步
+  - 仿真时间和系统时间需要同步，否则无法正常初始化
 
-  - Displays显示各种模块
+- Displays显示各种模块
 
-    - 当模块订阅的内容冲突时，会报错关闭程序
-      - 冲突情况：
-      - 1.定义的数据类型与传入的数据类型不同
-      - 2.同时存在两个接收同一个话题的模块
-    - 先删除错误的模块，在点击`add`重新添加正确的模块
+  - 当模块订阅的内容冲突时，会报错关闭程序
+    - 冲突情况：
+    - 1.定义的数据类型与传入的数据类型不同
+    - 2.同时存在两个接收同一个话题的模块
+  - 先删除错误的模块，在点击`add`重新添加正确的模块
 
-  - 图层显示
+- 图层显示
 
-    - 点击`Panels`，勾选`Views`，在右侧方框的`Type`中选择`Orbit`，可以看到三维图层
-  - 提高画面流畅程度
-    - 处理DDS通信（切换到CycloneDDS）
-      - `sudo apt install ros-humble-rmw-cyclonedds-cpp`
-      - `export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`（在`~/.bashrc`文件末尾添加）
-
-  
-
-  
+  - 点击`Panels`，勾选`Views`，在右侧方框的`Type`中选择`Orbit`，可以看到三维图层
+- 提高画面流畅程度
+  - 处理DDS通信（切换到CycloneDDS）
+    - `sudo apt install ros-humble-rmw-cyclonedds-cpp`
+    - `export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`（在`~/.bashrc`文件末尾添加）
 
 
-  - **手动配置流程**
 
-  - **第一步**：修改 Launch 文件 (禁止自动启动)
 
-    我们需要修改启动脚本，注释掉自动打开 RViz 的节点。
 
-    - **编辑文件**：`fishbot_navigation2/launch/navigation2.launch.py`
-    - **操作**：找到 `return launch.LaunchDescription([...])` 列表末尾的 `rviz2` 节点配置，并在每行前添加 `#` 将其注释掉。
+**手动配置流程**
 
-    ```
-    # 注释掉下面这一段，不让它自动启动 RViz
-    # launch_ros.actions.Node(
-    #     package='rviz2',
-    #     executable='rviz2',
-    #     name='rviz2',
-    #     arguments=['-d', rviz_config_dir],
-    #     parameters=[{'use_sim_time': use_sim_time}],
-    #     output='screen'
-    # ),
-    ```
+**第一步**：修改 Launch 文件 (禁止自动启动)
 
-    ------
+我们需要修改启动脚本，注释掉自动打开 RViz 的节点。
 
-    **第二步**：启动仿真与导航系统
+- **编辑文件**：`fishbot_navigation2/launch/navigation2.launch.py`
+- **操作**：找到 `return launch.LaunchDescription([...])` 列表末尾的 `rviz2` 节点配置，并在每行前添加 `#` 将其注释掉。
 
-    保存文件后，分别在两个终端中启动仿真环境和导航节点（此时不会自动弹出 RViz 窗口）。
+```
+# 注释掉下面这一段，不让它自动启动 RViz
+# launch_ros.actions.Node(
+#     package='rviz2',
+#     executable='rviz2',
+#     name='rviz2',
+#     arguments=['-d', rviz_config_dir],
+#     parameters=[{'use_sim_time': use_sim_time}],
+#     output='screen'
+# ),
+```
 
-    **终端 1 (启动 Gazebo 仿真):**
+------
 
-    Bash
+**第二步**：启动仿真与导航系统
 
-    ```
-    ros2 launch fishbot_navigation2 gazebo_sim.launch.py
-    ```
+保存文件后，分别在两个终端中启动仿真环境和导航节点（此时不会自动弹出 RViz 窗口）。
 
-    **终端 2 (启动 Nav2 导航栈):**
+**终端 1 (启动 Gazebo 仿真):**
 
-    Bash
+Bash
 
-    ```
-    ros2 launch fishbot_navigation2 navigation2.launch.py
-    ```
+```
+ros2 launch fishbot_navigation2 gazebo_sim.launch.py
+```
 
-    ------
+**终端 2 (启动 Nav2 导航栈):**
 
-    **第三步**：手动启动纯净版 RViz
+Bash
 
-    在新的终端中，启动一个不带任何默认配置的空白 RViz。
+```
+ros2 launch fishbot_navigation2 navigation2.launch.py
+```
 
-    **终端 3:**
+------
 
-    ```
-    # 手动启动一个空的 RViz
-    ros2 run rviz2 rviz2
-    ```
+**第三步**：手动启动纯净版 RViz
 
-    ------
+在新的终端中，启动一个不带任何默认配置的空白 RViz。
 
-    **第四步**：正确配置显示项 (关键步骤)
+**终端 3:**
 
-    RViz 打开后默认为黑色背景。请按照以下顺序依次添加和配置显示项，**注意话题名称的选择**：
+```
+# 手动启动一个空的 RViz
+ros2 run rviz2 rviz2
+```
 
-    1. 基础设置
+------
 
-    - **Global Options**: 将 `Fixed Frame` 修改为 **`odom`** 或 **`map`**。
+**第四步**：正确配置显示项 (关键步骤)
 
-    2. 添加 2D 激光 (用于导航避障)
+RViz 打开后默认为黑色背景。请按照以下顺序依次添加和配置显示项，**注意话题名称的选择**：
 
-    - **操作**: 点击左下角 `Add` -> 选择 `LaserScan`。
-    - **配置**:
-      - **Topic**: 必须手动改为 **`/scan_2d`** (关键！)。
-      - **Color**: 建议设为红色，方便观察。
-    - *现象*: 此时应该能看到红色的激光扫描线。
+1. 基础设置
 
-    3. 添加 3D 点云 (用于视觉效果)
+- **Global Options**: 将 `Fixed Frame` 修改为 **`odom`** 或 **`map`**。
 
-    - **操作**: 点击左下角 `Add` -> 选择 `PointCloud2`。
-    - **配置**:
-      - **Topic**: 选择 **`/scan`** (这是 Gazebo 原始的 3D 数据)。
-      - **Style**: 建议改为 `Points`。
-      - **Size**: 建议改为 `0.05` (像素单位)，以便看清点云。
-    - *现象*: 此时应该能看到立体的 3D 点云图像。
+2. 添加 2D 激光 (用于导航避障)
 
-    4. 添加地图与路径 (用于导航监控)
+- **操作**: 点击左下角 `Add` -> 选择 `LaserScan`。
+- **配置**:
+  - **Topic**: 必须手动改为 **`/scan_2d`** (关键！)。
+  - **Color**: 建议设为红色，方便观察。
+- *现象*: 此时应该能看到红色的激光扫描线。
 
-    - **地图**: 点击 `Add` -> `Map` -> Topic 选择 **`/map`**。
-    - **路径**: 点击 `Add` -> `Path` -> Topic 选择 **`/plan`** (全局路径) 或 **`/local_plan`** (局部路径)。
+3. 添加 3D 点云 (用于视觉效果)
 
-    ------
+- **操作**: 点击左下角 `Add` -> 选择 `PointCloud2`。
+- **配置**:
+  - **Topic**: 选择 **`/scan`** (这是 Gazebo 原始的 3D 数据)。
+  - **Style**: 建议改为 `Points`。
+  - **Size**: 建议改为 `0.05` (像素单位)，以便看清点云。
+- *现象*: 此时应该能看到立体的 3D 点云图像。
 
-    **第五步**：保存配置 (一劳永逸)
+4. 添加地图与路径 (用于导航监控)
 
-    为了避免下次还要重复配置，建议将当前的完美配置保存下来。
+- **地图**: 点击 `Add` -> `Map` -> Topic 选择 **`/map`**。
+- **路径**: 点击 `Add` -> `Path` -> Topic 选择 **`/plan`** (全局路径) 或 **`/local_plan`** (局部路径)。
 
-    **保存**: 点击 RViz 左上角的 `File` -> `Save Config As...`。
+------
+
+**第五步**：保存配置 (一劳永逸)
+
+为了避免下次还要重复配置，建议将当前的完美配置保存下来。
+
+**保存**: 点击 RViz 左上角的 `File` -> `Save Config As...`。
 
   ### Gazebo
 
