@@ -10,17 +10,27 @@
   git add .
   git commit -m "说明"
   git remote add origin git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git
+  git branch -M main
   git push origin main
   ```
-
+  
   - 二次提交
-  - 
-
+  - 需要用到pull
+  
   ```
   git clone ...
+  进行自己的修改
   git add .
-  git commit -m "解决合并冲突"
-  git pull origin main --allow-unrelated-histories
+  git commit -m "进行的修改"
+  git pull origin main
+  git push origin main
+  ```
+  
+  - 使用clone方法
+  
+  ```
+  git clone ..
+  进入clone得到的仓库（里面已经有 .git 仓库了）
   git add .
   git commit -m "进行的修改"
   git push origin main
@@ -59,12 +69,15 @@
 
 4.在整个文件夹的根目录下，想要上传单个文件夹
 
-- `git add docs/`
-- 如果没有之前仓库里面的东西，只有单一一个文件夹，就必须`git clone`下来，然后上传
+- 使用`git clone`
+  - `git add 文件夹名称/`   或者  `git add 路径/`
+
 
 5.克隆仓库
 
-`git clone git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git`
+- `git clone git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git`
+
+- `git clone`不需要提前`git init`
 
 6.github强制覆盖本地
 
@@ -76,6 +89,12 @@
 
 - 打开github仓库主页右侧的`Commits`找到之前的`Commit Hash`
   - 或者在终端中输入`git reflog`
-- `git reset --hard <你的Hash>`
+- 1.强制提交
+  - `git reset --hard <你的Hash>`
+  - `git push -f origin main`
+
+- 2.跳过pull
+  - `git checkout <ID> .`（空格加 .）
+
 - 回退到之前的内容，但是本地新增加的那个文件夹不会删除
 
