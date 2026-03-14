@@ -37,6 +37,10 @@
   ```
 
 
+- **查阅权限**
+
+  - 进入`settings`，然后再左侧栏目中选择`Collaborators`，点击`Manage visibility`，在`Danger Zone`中点击`Change visibility`，可以将私有仓库换成共有仓库
+
 - **非正常问题说明**
 
 1.如果之前已经有在这个仓库创建过链接，需要换到另一个仓库需要使用`set-url`
