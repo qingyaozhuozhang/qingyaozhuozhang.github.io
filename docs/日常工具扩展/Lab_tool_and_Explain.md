@@ -6,9 +6,12 @@
   - https://viewer.robotsfan.com/
 - Pycharm专业破解版
   - [pycharm的2024.1.1版本](https://blog.csdn.net/2301_77160836/article/details/139028775?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522152c7f65df49c5188f74f2013b103c6b%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=152c7f65df49c5188f74f2013b103c6b&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-139028775-null-null.nonecase&utm_term=pychram&spm=1018.2226.3001.4450)
-
 - 文档资料
   - https://xju-hurricane-team.github.io/Vision/
+- vscode插件
+  - PGM Viewer（查看栅格地图）
+  - pcd-viewer（查看点云）
+
 
 
 
