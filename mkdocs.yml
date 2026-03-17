@@ -131,11 +131,12 @@ nav:
         - 雷达:
           - Mid-360激光雷达配置教程: navigation/lidar/Mid-360激光雷达配置教程.md
           - 雷达定位信息: navigation/lidar/雷达定位信息.md
-        - ROS2:
+        - ROS2平台:
           - 导航主线:
             - ROS2主流程: navigation/ROS2/导航_主线/ROS2主流程.md
             - Navigation2导航框架: navigation/ROS2/导航_主线/Navigation2导航框架.md
             - 北极熊Nav2框架: navigation/ROS2/导航_主线/北极熊Nav2框架.md
+            - 决策树: navigation/ROS2/导航_主线/决策树.md
           - 导航支线:
             - ROS2基础编程: navigation/ROS2/导航_支线/ROS2基础编程.md
             - ROS2常用开发工具: navigation/ROS2/导航_支线/ROS2常用开发工具.md
