@@ -8,25 +8,26 @@ document.addEventListener("DOMContentLoaded", function() {
     const getRandomImage = () => basePath + randomImages[Math.floor(Math.random() * randomImages.length)];
     const getDefaultImage = () => basePath + defaultImage;
 
-    // 🌟【核心优化：静默预加载机制】
-    // 网页一打开，就在后台偷偷把 1~7.png 全部下载进浏览器缓存
-    // 这样用户在点击换装或者进入镜神模式时，图片是直接从本地内存秒出的，绝对不卡！
-    const preloadCache = [];
-    [...randomImages, defaultImage].forEach(imgName => {
-        const img = new Image();
-        img.src = basePath + imgName;
-        preloadCache.push(img); 
-    });
+    // 🌟【性能优化 1：静默预加载图片】保证秒切不闪烁
+    if (sessionStorage.getItem('js_imgs_preloaded') !== 'true') {
+        [...randomImages, defaultImage].forEach(imgName => { 
+            const img = new Image(); 
+            img.src = basePath + imgName; 
+        });
+        sessionStorage.setItem('js_imgs_preloaded', 'true');
+    }
 
+    // 🌟【性能优化 2：延迟加载知识库】解决网页跳转卡顿
     let dynamicKnowledgeBase = [];
-    fetch('/search/search_index.json')
-        .then(response => response.json())
-        .then(data => {
-            dynamicKnowledgeBase = data.docs.filter(doc => 
-                doc.text && doc.text.trim().length > 20 && doc.title && !doc.location.endsWith('/#')
-            );
-        })
-        .catch(err => console.error("知识库加载失败:", err));
+    setTimeout(() => {
+        fetch('/search/search_index.json')
+            .then(response => response.json())
+            .then(data => {
+                dynamicKnowledgeBase = data.docs.filter(doc => 
+                    doc.text && doc.text.trim().length > 20 && doc.title && !doc.location.endsWith('/#')
+                );
+            }).catch(err => console.error("知识库加载失败:", err));
+    }, 2500); 
 
     // ==========================================
     // 2. 构建 DOM 结构
@@ -51,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="shard-box shard-box-8"><div class="shard"></div></div>
         </div>
         <div id="jingshen-pet"></div>
-        
         <div id="jingshen-menu">
             <div class="menu-item" id="menu-timer" title="设置提醒">⏳</div>
             <div class="menu-item" id="menu-todo" title="待办事项">📝</div>
@@ -70,25 +70,37 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.appendChild(modalContainer);
 
     // ==========================================
-    // 3. 全局图标同步
+    // 3. 🌟【性能优化 3：Canvas 数据缓存】图标同步
     // ==========================================
     function syncAllImages(src) {
         pet.style.backgroundImage = `url('${src}')`;
         const logo = document.querySelector('.md-header__button.md-logo img');
         if (logo) { logo.src = src; logo.style.borderRadius = '50%'; logo.style.objectFit = 'cover'; }
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
-            const size = Math.min(img.width, img.height);
-            ctx.drawImage(img, (img.width - size)/2, (img.height - size)/2, size, size, 0, 0, 64, 64);
+        
+        function updateFavicon(url) {
             let favicon = document.querySelector('link[rel="icon"]');
             if (!favicon) { favicon = document.createElement('link'); favicon.rel = 'icon'; document.head.appendChild(favicon); }
-            favicon.href = canvas.toDataURL('image/png');
-        };
+            favicon.href = url;
+        }
+
+        const cacheKey = 'favicon_' + src;
+        const cachedIcon = sessionStorage.getItem(cacheKey);
+        
+        if (cachedIcon) {
+            updateFavicon(cachedIcon);
+        } else {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
+                const ctx = canvas.getContext('2d'); ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
+                const size = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width - size)/2, (img.height - size)/2, size, size, 0, 0, 64, 64);
+                const dataURL = canvas.toDataURL('image/png');
+                try { sessionStorage.setItem(cacheKey, dataURL); } catch(e) {}
+                updateFavicon(dataURL);
+            };
+        }
     }
 
     // ==========================================
@@ -98,8 +110,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function showMenu() {
         if (!petContainer.classList.contains('active') || isDragging || petContainer.classList.contains('giant-alert')) return;
-        petMenu.classList.add('show');
-        clearTimeout(menuTimeout);
+        petMenu.classList.add('show'); clearTimeout(menuTimeout);
         menuTimeout = setTimeout(() => { petMenu.classList.remove('show'); }, 3000);
     }
     petContainer.addEventListener('mouseenter', showMenu);
@@ -119,9 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const rect = petContainer.getBoundingClientRect();
         offsetX = clientX - rect.left; offsetY = clientY - rect.top;
         
-        petContainer.style.transition = 'none'; 
-        petContainer.style.bottom = 'auto'; petContainer.style.right = 'auto';
-        petMenu.classList.remove('show'); 
+        petContainer.style.transition = 'none'; petContainer.style.bottom = 'auto'; petContainer.style.right = 'auto'; petMenu.classList.remove('show'); 
     }
 
     function doDrag(e) {
@@ -130,8 +139,7 @@ document.addEventListener("DOMContentLoaded", function() {
         requestAnimationFrame(() => {
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-            petContainer.style.left = (clientX - offsetX) + 'px';
-            petContainer.style.top = (clientY - offsetY) + 'px';
+            petContainer.style.left = (clientX - offsetX) + 'px'; petContainer.style.top = (clientY - offsetY) + 'px';
         });
     }
 
@@ -148,15 +156,13 @@ document.addEventListener("DOMContentLoaded", function() {
     pet.addEventListener('click', () => {
          if (isDragged || petContainer.classList.contains('giant-alert')) return; 
          if (document.body.getAttribute('data-md-color-scheme') === 'jingshen') {
-             syncAllImages(getRandomImage()); 
-             petContainer.classList.toggle('shard-yellow'); 
+             syncAllImages(getRandomImage()); petContainer.classList.toggle('shard-yellow'); 
          }
          pet.style.transform = 'scale(1.3)'; setTimeout(() => { pet.style.transform = ''; }, 150);
     });
 
     function triggerGiantAlert(message, durationSec = 2, callback = null) {
-        clearTimeout(giantAlertTimeout);
-        petContainer.classList.add('giant-alert'); petMenu.classList.remove('show');
+        clearTimeout(giantAlertTimeout); petContainer.classList.add('giant-alert'); petMenu.classList.remove('show');
         speak("🚨 " + message, durationSec * 1000);
         giantAlertTimeout = setTimeout(() => {
             petContainer.classList.remove('giant-alert');
@@ -164,9 +170,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }, durationSec * 1000);
     }
 
-    // ==========================================
-    // 5. 模式切换调度与缓存拦截
-    // ==========================================
     function applyJingshenMode() {
         const currentScheme = document.body.getAttribute('data-md-color-scheme');
         const wasAlreadyJingshen = sessionStorage.getItem('is_jingshen_active') === 'true';
@@ -180,8 +183,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 400); 
                 sessionStorage.setItem('is_jingshen_active', 'true');
             } else {
-                syncAllImages(getRandomImage());
-                petContainer.classList.add('active'); 
+                syncAllImages(getRandomImage()); petContainer.classList.add('active'); 
             }
         } else {
             petContainer.classList.remove('active'); petMenu.classList.remove('show'); closeModal(); syncAllImages(getDefaultImage()); 
@@ -189,18 +191,17 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     applyJingshenMode();
-    new MutationObserver(mutations => mutations.forEach(m => { 
-        if (m.attributeName === "data-md-color-scheme") applyJingshenMode(); 
-    })).observe(document.body, { attributes: true });
+    new MutationObserver(mutations => mutations.forEach(m => { if (m.attributeName === "data-md-color-scheme") applyJingshenMode(); })).observe(document.body, { attributes: true });
 
     // ==========================================
-    // 6. UI 功能实现 (弹窗与工具)
+    // 5. UI 功能实现 (弹窗与工具)
     // ==========================================
     function speak(text, duration = 4000) { petSpeech.innerText = text; petSpeech.classList.add('show'); setTimeout(() => petSpeech.classList.remove('show'), duration); }
     function openModal(htmlContent) { modalContainer.innerHTML = htmlContent; modalContainer.classList.add('show'); modalContainer.onclick = (e) => { if(e.target === modalContainer) closeModal(); }; }
     function closeModal() { modalContainer.classList.remove('show'); }
     window.closeJingshenModal = closeModal; 
 
+    // 时钟 UI
     document.getElementById('menu-timer').addEventListener('click', () => {
         openModal(`
             <div class="jingshen-card">
@@ -209,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     <button id="tab-countdown" onclick="switchTimerTab('countdown')" style="flex:1; padding:10px; background:var(--md-accent-fg-color); color:#fff; border-radius:5px; border:none; cursor:pointer; font-size:16px;">倒计时</button>
                     <button id="tab-fixedtime" onclick="switchTimerTab('fixedtime')" style="flex:1; padding:10px; background:#eee; color:#333; border-radius:5px; border:none; cursor:pointer; font-size:16px;">指定时间</button>
                 </div>
-                
                 <div id="panel-countdown">
                     <div style="display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box;">
                         <div style="flex:1; padding-right:10px;">
@@ -221,11 +221,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         </div>
                     </div>
                 </div>
-
                 <div id="panel-fixedtime" style="display:none; width:100%;">
                     <input type="time" id="timer-time" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:18px; box-sizing:border-box;">
                 </div>
-                
                 <button onclick="startJingshenTimer()" style="width:100%; padding: 14px; background: var(--md-accent-fg-color); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 25px; font-weight:bold; font-size:18px; box-sizing:border-box;">开启提醒</button>
             </div>
         `);
@@ -238,27 +236,23 @@ document.addEventListener("DOMContentLoaded", function() {
         else { tabFt.style.background = 'var(--md-accent-fg-color)'; tabFt.style.color = '#fff'; tabCd.style.background = '#eee'; tabCd.style.color = '#333'; pnlFt.style.display = 'block'; pnlCd.style.display = 'none'; }
     };
 
-    let reminderTimer = null, reminderAlertTimer = null;
-    let globalTargetTimerTime = 0;      
-    let hasRemindedAlmostUp = false;    
+    let reminderTimer = null, reminderAlertTimer = null, globalTargetTimerTime = 0, hasRemindedAlmostUp = false;    
 
     window.startJingshenTimer = () => {
         let delayMs = 0, timeMsg = "";
         if (document.getElementById('panel-countdown').style.display !== 'none') {
             const mins = parseInt(document.getElementById('timer-min').value) || 0; const secs = parseInt(document.getElementById('timer-sec').value) || 0;
-            if (mins === 0 && secs === 0) return alert("请输入有效的时间哦！");
+            if (mins === 0 && secs === 0) return alert("请输入有效的时间！");
             delayMs = (mins * 60 + secs) * 1000; timeMsg = `${mins > 0 ? mins+'分' : ''}${secs}秒`;
         } else {
             const timeStr = document.getElementById('timer-time').value; if (!timeStr) return alert("请选择时间！");
             const [h, m] = timeStr.split(':'); const now = new Date(); const target = new Date(); target.setHours(h, m, 0, 0);
             delayMs = target.getTime() - now.getTime();
-            if (delayMs <= 0) return alert("这个时间已经过去啦，设个未来的时间吧！");
+            if (delayMs <= 0) return alert("设个未来的时间吧！");
             timeMsg = `今日 ${timeStr}`;
         }
         closeModal(); speak(`好嘞！已设好 ${timeMsg} 的提醒~`);
-        
-        globalTargetTimerTime = Date.now() + delayMs;
-        hasRemindedAlmostUp = false;
+        globalTargetTimerTime = Date.now() + delayMs; hasRemindedAlmostUp = false;
 
         clearTimeout(reminderTimer);
         reminderTimer = setTimeout(() => {
@@ -276,10 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }, delayMs);
     };
-    window.stopJingshenTimer = () => { 
-        pet.classList.remove('ringing'); clearTimeout(reminderAlertTimer); 
-        globalTargetTimerTime = 0; closeModal(); speak("提醒已关闭，继续加油！"); 
-    };
+    window.stopJingshenTimer = () => { pet.classList.remove('ringing'); clearTimeout(reminderAlertTimer); globalTargetTimerTime = 0; closeModal(); speak("提醒已关闭！"); };
 
     // 待办事项
     function getTodos() {
@@ -294,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function renderTodoModal() {
         const todos = getTodos();
         let html = `<div class="jingshen-card"><h3>📝 今日待办</h3><div style="max-height: 250px; overflow-y: auto; overflow-x: hidden; margin-bottom: 20px; padding-right:5px;">`;
-        if (todos.length === 0) html += `<p style="color: #888; text-align:center; font-size:16px;">今天还没有任务，快来添加吧！</p>`;
+        if (todos.length === 0) html += `<p style="color: #888; text-align:center; font-size:16px;">今天还没任务，快来添加！</p>`;
         todos.forEach((t, i) => {
             html += `<label style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer; text-decoration: ${t.done ? 'line-through' : 'none'}; color: ${t.done ? '#999' : '#333'}; font-size:16px;">
                     <input type="checkbox" onchange="toggleTodo(${i})" ${t.done ? 'checked' : ''} style="margin-right: 15px; width:20px; height:20px; flex-shrink:0;">
@@ -315,12 +306,12 @@ document.addEventListener("DOMContentLoaded", function() {
     function checkTodoStatus(isInitial = false) {
         if(!petContainer.classList.contains('active')) return;
         const todos = getTodos();
-        if (isInitial && todos.length === 0) triggerGiantAlert("今天还没有写待办哦~ 📝", 2);
-        else if (!isInitial && todos.length > 0 && todos.every(t => t.done)) triggerGiantAlert("✨ 太棒了！今日任务全部达成！", 2);
+        if (isInitial && todos.length === 0) triggerGiantAlert("还没写待办哦~ 📝", 2);
+        else if (!isInitial && todos.length > 0 && todos.every(t => t.done)) triggerGiantAlert("✨ 太棒了！任务全达成！", 2);
     }
     
     document.getElementById('menu-card').addEventListener('click', () => {
-        if (dynamicKnowledgeBase.length === 0) return speak("还在读取你的海量文档，稍微等我一下下哦！");
+        if (dynamicKnowledgeBase.length === 0) return speak("题库还在加载，稍微等一等哦！");
         const item = dynamicKnowledgeBase[Math.floor(Math.random() * dynamicKnowledgeBase.length)];
         let cleanText = item.text.replace(/¶/g, '').trim();
         let shortAnswer = cleanText.length > 250 ? cleanText.substring(0, 250) + "..." : cleanText;
@@ -329,17 +320,14 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="jingshen-flashcard-scene" onclick="this.classList.toggle('is-flipped')">
                 <div class="jingshen-flashcard">
                     <div class="card-face card-front">
-                        <span class="card-tag">💡 智能知识回顾</span>
-                        <h3 style="font-size:22px; line-height:1.5; word-break:break-word;">关于『 ${item.title} 』的知识点是什么？</h3>
-                        <p style="color:#888; font-size:14px; position:absolute; bottom: 25px; left:0; width:100%;">[ 点击卡片查看答案 ]</p>
+                        <span class="card-tag">💡 智能回顾</span>
+                        <h3 style="font-size:22px; line-height:1.5; word-break:break-word;">关于『 ${item.title} 』的知识点？</h3>
+                        <p style="color:#888; font-size:14px; position:absolute; bottom: 25px; left:0; width:100%;">[ 点击查看答案 ]</p>
                     </div>
                     <div class="card-face card-back">
                         <span class="card-tag" style="background:var(--md-accent-fg-color); color:white;">✨ 答案</span>
-                        <div class="card-scroll-area">
-                            <p style="text-align: left; line-height: 1.7; font-size:16px; margin:0;">${shortAnswer}</p>
-                        </div>
-                        <a href="${basePath}${item.location}" onclick="event.stopPropagation(); closeJingshenModal();" 
-                           class="card-btn-link">前往原文复习 ➔</a>
+                        <div class="card-scroll-area"><p style="text-align: left; line-height: 1.7; font-size:16px; margin:0;">${shortAnswer}</p></div>
+                        <a href="${basePath}${item.location}" onclick="event.stopPropagation(); closeJingshenModal();" class="card-btn-link">前往原文复习 ➔</a>
                     </div>
                 </div>
             </div>
@@ -347,37 +335,22 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ==========================================
-    // 7. 全局智能隐式后台巡逻（守护机制）
+    // 6. 后台守护线程
     // ==========================================
     let lastTodoRemindTime = 0; 
-    
     setInterval(() => {
         if (!petContainer.classList.contains('active')) return;
-
         const now = Date.now();
-
-        // 1. 倒计时即将结束的预提醒 (剩1分钟内触发，仅触发一次)
+        
         if (globalTargetTimerTime > 0 && !hasRemindedAlmostUp) {
-            const timeLeft = globalTargetTimerTime - now;
-            if (timeLeft > 0 && timeLeft <= 60000) { 
-                speak("⏳ 专注时间快结束啦，准备收尾哦！", 5000);
-                hasRemindedAlmostUp = true;
-                return; 
+            if ((globalTargetTimerTime - now) > 0 && (globalTargetTimerTime - now) <= 60000) { 
+                speak("⏳ 专注快结束啦，准备收尾！", 5000); hasRemindedAlmostUp = true; return; 
             }
         }
-
-        // 2. 未完成待办佛系提醒 (内置冷却5分钟，概率触发)
-        if (now - lastTodoRemindTime > 5 * 60 * 1000) { 
-            if (Math.random() < 0.25) { 
-                const todos = getTodos();
-                if (todos.length > 0) {
-                    const unfinished = todos.filter(t => !t.done);
-                    if (unfinished.length > 0) {
-                        speak(`📝 你还有 ${unfinished.length} 个待办没写完呢，抓紧时间哦！`, 5000);
-                        lastTodoRemindTime = now; 
-                    }
-                }
-            }
+        
+        if (now - lastTodoRemindTime > 5 * 60 * 1000 && Math.random() < 0.25) { 
+            const unfinished = getTodos().filter(t => !t.done);
+            if (unfinished.length > 0) { speak(`📝 还有 ${unfinished.length} 个待办，抓紧哦！`, 5000); lastTodoRemindTime = now; }
         }
     }, 30000);
 });
