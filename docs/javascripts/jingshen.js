@@ -8,6 +8,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const getRandomImage = () => basePath + randomImages[Math.floor(Math.random() * randomImages.length)];
     const getDefaultImage = () => basePath + defaultImage;
 
+    // 🌟【核心优化：静默预加载机制】
+    // 网页一打开，就在后台偷偷把 1~7.png 全部下载进浏览器缓存
+    // 这样用户在点击换装或者进入镜神模式时，图片是直接从本地内存秒出的，绝对不卡！
+    const preloadCache = [];
+    [...randomImages, defaultImage].forEach(imgName => {
+        const img = new Image();
+        img.src = basePath + imgName;
+        preloadCache.push(img); 
+    });
+
     let dynamicKnowledgeBase = [];
     fetch('/search/search_index.json')
         .then(response => response.json())
@@ -155,16 +165,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // 5. 【优化】利用缓存记忆，完美拦截多余特效
+    // 5. 模式切换调度与缓存拦截
     // ==========================================
     function applyJingshenMode() {
         const currentScheme = document.body.getAttribute('data-md-color-scheme');
-        // 读取记忆，判断当前是否已经在镜神模式里了
         const wasAlreadyJingshen = sessionStorage.getItem('is_jingshen_active') === 'true';
         
         if (currentScheme === 'jingshen') {
             if (!wasAlreadyJingshen) {
-                // 【仅在真正"切入"模式时，触发高级转场】
                 transitionOverlay.classList.add('active');
                 setTimeout(() => {
                     syncAllImages(getRandomImage()); petContainer.classList.add('active'); 
@@ -172,12 +180,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 400); 
                 sessionStorage.setItem('is_jingshen_active', 'true');
             } else {
-                // 如果是从别的文档页跳过来，已经在镜神模式，直接现身，不播动画
                 syncAllImages(getRandomImage());
                 petContainer.classList.add('active'); 
             }
         } else {
-            // 退出镜神模式，清除状态
             petContainer.classList.remove('active'); petMenu.classList.remove('show'); closeModal(); syncAllImages(getDefaultImage()); 
             sessionStorage.setItem('is_jingshen_active', 'false');
         }
@@ -187,7 +193,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (m.attributeName === "data-md-color-scheme") applyJingshenMode(); 
     })).observe(document.body, { attributes: true });
 
-
     // ==========================================
     // 6. UI 功能实现 (弹窗与工具)
     // ==========================================
@@ -196,7 +201,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function closeModal() { modalContainer.classList.remove('show'); }
     window.closeJingshenModal = closeModal; 
 
-    // 【优化】排版舒适的时间设置 UI
     document.getElementById('menu-timer').addEventListener('click', () => {
         openModal(`
             <div class="jingshen-card">
@@ -235,8 +239,8 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     let reminderTimer = null, reminderAlertTimer = null;
-    let globalTargetTimerTime = 0;      // 记录目标时间，用于做提前一分钟提醒
-    let hasRemindedAlmostUp = false;    // 防止重复提醒
+    let globalTargetTimerTime = 0;      
+    let hasRemindedAlmostUp = false;    
 
     window.startJingshenTimer = () => {
         let delayMs = 0, timeMsg = "";
@@ -253,13 +257,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         closeModal(); speak(`好嘞！已设好 ${timeMsg} 的提醒~`);
         
-        // 记录全局时间供后台巡逻线程使用
         globalTargetTimerTime = Date.now() + delayMs;
         hasRemindedAlmostUp = false;
 
         clearTimeout(reminderTimer);
         reminderTimer = setTimeout(() => {
-            globalTargetTimerTime = 0; // 到了就清空
+            globalTargetTimerTime = 0; 
             triggerGiantAlert("时间到啦！！！", 3, () => {
                 pet.classList.add('ringing');
                 openModal(`
@@ -344,36 +347,34 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ==========================================
-    // 7. 【优化】全局智能隐式后台巡逻（守护机制）
+    // 7. 全局智能隐式后台巡逻（守护机制）
     // ==========================================
-    let lastTodoRemindTime = 0; // 待办提醒冷却时间锁
+    let lastTodoRemindTime = 0; 
     
-    // 每 30 秒执行一次巡更
     setInterval(() => {
         if (!petContainer.classList.contains('active')) return;
 
         const now = Date.now();
 
-        // 1. [倒计时即将结束] 的预提醒 (剩1分钟时触发，仅触发一次)
+        // 1. 倒计时即将结束的预提醒 (剩1分钟内触发，仅触发一次)
         if (globalTargetTimerTime > 0 && !hasRemindedAlmostUp) {
             const timeLeft = globalTargetTimerTime - now;
             if (timeLeft > 0 && timeLeft <= 60000) { 
                 speak("⏳ 专注时间快结束啦，准备收尾哦！", 5000);
                 hasRemindedAlmostUp = true;
-                return; // 说了倒计时，这轮就不说别的了，防话多
+                return; 
             }
         }
 
-        // 2. [未完成待办] 的佛系提醒 (极低概率触发，且有5分钟的内置防烦人冷却)
+        // 2. 未完成待办佛系提醒 (内置冷却5分钟，概率触发)
         if (now - lastTodoRemindTime > 5 * 60 * 1000) { 
-            // 每次巡逻只有 25% 的概率开口，这意味着平均可能需要十几分钟才会提醒你一次，绝对不会烦人
             if (Math.random() < 0.25) { 
                 const todos = getTodos();
                 if (todos.length > 0) {
                     const unfinished = todos.filter(t => !t.done);
                     if (unfinished.length > 0) {
                         speak(`📝 你还有 ${unfinished.length} 个待办没写完呢，抓紧时间哦！`, 5000);
-                        lastTodoRemindTime = now; // 锁上冷却时间
+                        lastTodoRemindTime = now; 
                     }
                 }
             }
