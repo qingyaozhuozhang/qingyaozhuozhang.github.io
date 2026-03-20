@@ -16,47 +16,55 @@ repo_name: GitHub
 theme:
   name: material
   language: zh
-  # logo: assets/logo.png # 建议后续添加一个简洁的 SVG Logo
-  # favicon: assets/favicon.png
+  logo: 1.png      # 默认占位，后续由JS随机替换
+  favicon: 2.png   # 默认占位，后续由JS随机替换
 
   features:
     - navigation.tabs           # 顶级菜单栏
     - navigation.tabs.sticky    # 菜单栏吸顶 (配合 CSS 实现毛玻璃)
     - navigation.sections       # 侧边栏分组
     - navigation.expand         # 默认展开
-    - navigation.top            # 【新增】回到顶部按钮
+    - navigation.top            # 回到顶部按钮
     - navigation.tracking       # 滚动锚点定位
     - navigation.indexes        # 目录索引支持
     - toc.follow                # 右侧目录自动跟随
     - search.suggest            # 搜索智能建议
-    - search.share              # 【新增】搜索分享
+    - search.share              # 搜索分享
     - search.highlight          # 搜索关键词高亮
     - content.code.copy         # 代码块复制按钮
     - content.action.edit       # 页面编辑按钮
-    - content.tooltips          # 【新增】提示词支持
+    - content.tooltips          # 提示词支持
 
   palette:
-    # 亮色模式：纯净白 + 靛蓝 (专业、冷静)
+    # 1. 亮色模式：纯净白 + 靛蓝
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: white          # 顶栏白色，为毛玻璃效果做铺垫
-      accent: indigo          # 强调色：靛蓝
+      primary: white          
+      accent: indigo          
       toggle:
         icon: material/weather-sunny
         name: 切换至深色模式
 
-    # 深色模式：板岩灰 + 靛蓝 (护眼、极客)
+    # 2. 深色模式：板岩灰 + 靛蓝
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black          # 顶栏黑色
+      primary: black          
       accent: indigo
       toggle:
         icon: material/weather-night
+        name: 切换至镜神模式
+    
+    # 3. 镜神模式：专属桌宠开关 (已去除了背景图片)
+    - scheme: jingshen
+      primary: white          
+      accent: deep-purple     
+      toggle:
+        icon: material/star-face 
         name: 切换至亮色模式
 
   font:
-    text: "Noto Sans SC"      # 正文：思源黑体
-    code: "JetBrains Mono"    # 代码：JetBrains Mono
+    text: "Noto Sans SC"      
+    code: "JetBrains Mono"    
 
 # ==========================================
 # 额外 CSS 配置
@@ -111,6 +119,7 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/jingshen.js  # 引入交互脚本
 
 # ==========================================
 # 导航结构 (保持原有结构不变)
