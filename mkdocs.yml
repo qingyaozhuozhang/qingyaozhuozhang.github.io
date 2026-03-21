@@ -130,7 +130,7 @@ nav:
       - 视觉:
         - 深度学习:
           - 知识点: 视觉/深度学习/知识点.md
-          - 实践结果: 视觉/深度学习/实践结果.md
+          - yolo实践: 视觉/深度学习/yolo实践.md
         - Linux:
           - Linux知识点: 视觉/Linux/Linux知识点.md
           - git知识点: 视觉/Linux/git知识点.md

@@ -1,12 +1,12 @@
 # yolo跑通的示例代码
 
-https://github.com/qingyaozhuozhang/jingshen/tree/main/yolo_base2
+https://github.com/qingyaozhuozhang/jingshen/tree/main/%E6%91%84%E5%83%8F%E5%A4%B4/yolo
 
 
 
 # 模型训练
 
-- 将未标注的图片（训练集和测试集）分别放置在`images`文件夹下的`train`和`val`，将标注好的秃瓢（训练集和测试集）分别放置在`labels`文件夹下的`train`和`val`
+- 将未标注的图片（训练集和测试集）分别放置在`images`文件夹下的`train`和`val`，将标注好的图片（训练集和测试集）分别放置在`labels`文件夹下的`train`和`val`
 
 ![](./picture/image.png)
 
