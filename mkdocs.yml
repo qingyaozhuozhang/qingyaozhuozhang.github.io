@@ -1,0 +1,185 @@
+# ==========================================
+# 站点基本信息 
+# ==========================================
+site_name: 镜神的知识网络
+site_description: 连接思维的节点，构建第二大脑
+
+# 部署地址：
+site_url: https://qingyaozhuozhang.github.io/
+# 源码仓库地址：
+repo_url: https://github.com/qingyaozhuozhang/qingyaozhuozhang.github.io
+repo_name: GitHub
+
+# ==========================================
+# 主题配置 (Design by Gemini: Modern Minimalist)
+# ==========================================
+theme:
+  name: material
+  language: zh
+  logo: 1.png      # 默认占位，后续由JS随机替换
+  favicon: 2.png   # 默认占位，后续由JS随机替换
+
+  features:
+    - navigation.tabs           # 顶级菜单栏
+    - navigation.tabs.sticky    # 菜单栏吸顶 (配合 CSS 实现毛玻璃)
+    - navigation.sections       # 侧边栏分组
+    - navigation.expand         # 默认展开
+    - navigation.top            # 回到顶部按钮
+    - navigation.tracking       # 滚动锚点定位
+    - navigation.indexes        # 目录索引支持
+    - toc.follow                # 右侧目录自动跟随
+    - search.suggest            # 搜索智能建议
+    - search.share              # 搜索分享
+    - search.highlight          # 搜索关键词高亮
+    - content.code.copy         # 代码块复制按钮
+    - content.action.edit       # 页面编辑按钮
+    - content.tooltips          # 提示词支持
+
+  palette:
+    # 1. 亮色模式：纯净白 + 靛蓝
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white          
+      accent: indigo          
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至深色模式
+
+    # 2. 深色模式：板岩灰 + 靛蓝
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black          
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 切换至镜神模式
+    
+    # 3. 镜神模式：专属桌宠开关 (已去除了背景图片)
+    - scheme: jingshen
+      primary: white          
+      accent: deep-purple     
+      toggle:
+        icon: material/star-face 
+        name: 切换至亮色模式
+
+  font:
+    text: "Noto Sans SC"      
+    code: "JetBrains Mono"    
+
+# ==========================================
+# 额外 CSS 配置
+# ==========================================
+extra_css:
+  - stylesheets/extra.css
+
+# ==========================================
+# 插件配置
+# ==========================================
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date             
+      locale: zh             
+      enable_creation_date: false 
+      fallback_to_build_date: true 
+  - minify:                  
+      minify_html: true
+
+# ==========================================
+# Markdown 扩展
+# ==========================================
+markdown_extensions:
+  - admonition               
+  - pymdownx.details         
+  - attr_list                
+  - md_in_html
+  - pymdownx.superfences:    
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:      
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:       
+      custom_checkbox: true
+  - pymdownx.arithmatex:     
+      generic: true
+  - pymdownx.emoji:          
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+# ==========================================
+# 额外脚本
+# ==========================================
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/jingshen.js  # 引入交互脚本
+
+# ==========================================
+# 导航结构 (保持原有结构不变)
+# ==========================================
+nav:
+  - 🏠 首页: index.md
+  - 🧠 核心知识:
+      - 视觉:
+        - 深度学习:
+          - 知识点: 视觉/深度学习/知识点.md
+          - yolo实践: 视觉/深度学习/yolo实践.md
+        - Linux:
+          - Linux知识点: 视觉/Linux/Linux知识点.md
+          - git知识点: 视觉/Linux/git知识点.md
+        - opencv:
+          - opencv知识点: 视觉/opencv/opencv知识点.md
+      - 导航:
+        - 雷达:
+          - Mid-360激光雷达配置教程: navigation/lidar/Mid-360激光雷达配置教程.md
+          - 雷达定位信息: navigation/lidar/雷达定位信息.md
+        - ROS2平台:
+          - 导航主线:
+            - ROS2主流程: navigation/ROS2/导航_主线/ROS2主流程.md
+            - Navigation2导航框架: navigation/ROS2/导航_主线/Navigation2导航框架.md
+            - 北极熊Nav2框架: navigation/ROS2/导航_主线/北极熊Nav2框架.md
+            - 决策树: navigation/ROS2/导航_主线/决策树.md
+          - 导航支线:
+            - ROS2基础编程: navigation/ROS2/导航_支线/ROS2基础编程.md
+            - ROS2常用开发工具: navigation/ROS2/导航_支线/ROS2常用开发工具.md
+            - launch文件的编写: navigation/ROS2/导航_支线/launch文件的编写.md
+            - 类的封装和调用: navigation/ROS2/导航_支线/类的封装和调用.md
+      - 编程:
+        - python:
+          - 核心基础语法: 编程/python/核心基础语法.md
+          - 高级编程: 编程/python/高级编程.md
+          - 前端基础: 编程/python/前端基础.md
+          - 爬虫基础: 编程/python/爬虫基础.md
+          - 算法与数据结构: 编程/python/算法与数据结构.md
+        - C:
+          - 核心基础语法: 编程/C/核心基础语法.md
+          - C语言编码风格与规范: 编程/C/C语言编码风格与规范.md
+        - C++:
+          - 核心基础语法: 编程/C++/核心基础语法.md
+  - 🛠️ 日常工具扩展:
+      - 工具链接: 日常工具扩展/工具链接.md
+      - 知识性资料链接: 日常工具扩展/知识性资料链接.md
+      - Markdown语法编写笔记的基础操作: 日常工具扩展/Markdown语法编写笔记的基础操作.md
+      - Lab_tool_and_Explain: 日常工具扩展/Lab_tool_and_Explain.md
+  - 💭 常用例程:
+      - 生活常用例程:
+        - git上传Github远程仓库: 常用例程/生活常用例程/git.md
+        - 创建Github_Page网页资料库: 常用例程/生活常用例程/Github_Page.md
+        - 生活常用: 常用例程/生活常用例程/生活实用.md
+      - 编程常用例程:
+        - Yolo:
+          - yolo数据集标注: 常用例程/编程常用例程/yolo数据集标注.md
+          - yolo模型训练和调用: 常用例程/编程常用例程/yolo模型训练和调用.md
+        - 操纵仿真模型: 常用例程/编程常用例程/操纵仿真模型和实车.md
+        - 调用摄像头: 常用例程/编程常用例程/调用摄像头.md
+        - 基础操作: 常用例程/编程常用例程/基础操作.md
+      - 具有实际意义的程序:
+        - 定位信息查询: 常用例程/具有实际意义的程序/定位信息查询.md
+        - 逻辑闭环锁屏: 常用例程/具有实际意义的程序/逻辑闭环锁屏.md

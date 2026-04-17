@@ -1,0 +1,118 @@
+### Git提交远程仓库流程
+
+- **正常流程**
+
+  - 首次提交
+  - 
+
+  ```
+  git init
+  git add .
+  git commit -m "说明"
+  git remote add origin git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git
+  git branch -M main
+  git push origin main
+  ```
+  
+  - 二次提交
+  - 需要用到pull
+  
+  ```
+  git clone ...
+  进行自己的修改
+  git add .
+  git commit -m "进行的修改"
+  git pull origin main
+  git push origin main
+  ```
+  
+  - 使用clone方法
+  
+  ```
+  git clone ..
+  进入clone得到的仓库（里面已经有 .git 仓库了）
+  git add .
+  git commit -m "进行的修改"
+  git push origin main
+  ```
+
+
+- **查阅权限**
+
+  - 进入`settings`，然后再左侧栏目中选择`Collaborators`，点击`Manage visibility`，在`Danger Zone`中点击`Change visibility`，可以将私有仓库换成共有仓库
+
+- **非正常问题说明**
+
+1.如果之前已经有在这个仓库创建过链接，需要换到另一个仓库需要使用`set-url`
+
+`git remote set-url origin git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git`
+
+2.如果推上去的内容与原先内容有冲突
+
+（1）直接使用`-f`参数
+
+`git push -f origin main`
+
+（2）第一次推送得使用`-u`参数
+
+`git push -u origin main`
+
+3.需要使用`git pull`的情况
+
+（1）正常
+
+`git pull origin main`
+
+（2）遇到合并情况
+
+`git pull --rebase origin main`（`--rebase`保持提交历史是一条干净的支线，而不是充满复杂的"Merge branch.."的记录）
+
+（3）遇到`refusing to merge unrelated histories`问题
+
+`git pull origin main --allow-unrelated-histories`（合并两个完全独立、没有共同祖先的仓库）
+
+4.在整个文件夹的根目录下，想要上传单个文件夹
+
+- 使用`git clone`
+  - `git add 文件夹名称/`   或者  `git add 路径/`
+
+
+5.克隆仓库
+
+- `git clone git@github.com:qingyaozhuozhang/qingyaozhuozhang.github.io.git`
+
+- `git clone`不需要提前`git init`
+
+6.github强制覆盖本地
+
+`git fetch --all`
+
+`git reset --hard origin/main`
+
+7.修改仓库错误，需要回退
+
+- 打开github仓库主页右侧的`Commits`找到之前的`Commit Hash`
+  - 或者在终端中输入`git reflog`
+- 1.强制提交
+  - `git reset --hard <你的Hash>`
+  - `git push -f origin main`
+
+- 2.跳过pull
+  - `git checkout <ID> .`（空格加 .）
+
+- 回退到之前的内容，但是本地新增加的那个文件夹不会删除
+
+8.Git子模块问题
+
+- **问题**：如果在子文件中新增加了`git`仓库（会生成链接，在`github`上无法打开）
+- **解决方案**：将文件删掉，然后`git add \ git commit`（在本地），再重新将文件添加回来，继续`git add \ git commit`（在本地），最后在`git push`
+
+9.Github上传单个文件最多100MB
+
+10.Github同时上传同一个东西的时候会清空一个（空文件夹）
+
+11.克隆仓库内单个分支（`git clone -b 分支名 --single-branch git地址`）
+
+12.推送到远程对应分支
+
+- `git checkout -b 分支名称（跟远程名称一样）`
