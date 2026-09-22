@@ -16,8 +16,8 @@ repo_name: GitHub
 theme:
   name: material
   language: zh
-  logo: 1.png      # 默认占位，后续由JS随机替换
-  favicon: 2.png   # 默认占位，后续由JS随机替换
+  logo: 1.png
+  favicon: 2.png
 
   features:
     - navigation.tabs           # 顶级菜单栏
@@ -52,14 +52,6 @@ theme:
       accent: indigo
       toggle:
         icon: material/weather-night
-        name: 切换至镜神模式
-    
-    # 3. 镜神模式：专属桌宠开关 (已去除了背景图片)
-    - scheme: jingshen
-      primary: white          
-      accent: deep-purple     
-      toggle:
-        icon: material/star-face 
         name: 切换至亮色模式
 
   font:
@@ -119,8 +111,6 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - javascripts/jingshen.js  # 引入交互脚本
-
 # ==========================================
 # 导航结构 (保持原有结构不变)
 # ==========================================
