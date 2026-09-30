@@ -1,4 +1,12 @@
-# 🐙 Git 学习笔记
+---
+title: Git 学习笔记｜版本控制、分支与 GitHub 协作
+description: Git 版本控制学习笔记，整理仓库、提交、分支、远程仓库与 GitHub 协作的常用流程。
+tags:
+  - Git
+  - GitHub
+  - 版本控制
+---
+# Git 与 GitHub 版本控制学习笔记
 
 ## 01. Git 简介与配置 ⚙️
 

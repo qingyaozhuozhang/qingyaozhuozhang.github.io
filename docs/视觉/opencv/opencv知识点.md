@@ -1,4 +1,13 @@
-# 👁️ OpenCV 计算机视觉学习笔记
+---
+title: OpenCV 计算机视觉学习笔记｜Python 图像处理基础
+description: OpenCV 与 Python 图像处理学习笔记，整理图像基础、常用 API 与计算机视觉开发知识。
+tags:
+  - OpenCV
+  - Python
+  - 计算机视觉
+  - 图像处理
+---
+# OpenCV 计算机视觉学习笔记
 
 ## 一. OpenCV 简介与图像处理基础 🖼️
 

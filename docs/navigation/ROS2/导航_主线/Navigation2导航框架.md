@@ -1,4 +1,14 @@
-# Navigation2 导航框架
+---
+title: Navigation2（Nav2）导航框架｜行为树、Costmap 与路径规划
+description: 介绍 ROS2 Navigation2（Nav2）的行为树、全局与局部代价地图、规划与控制等核心结构。
+tags:
+  - ROS2
+  - Nav2
+  - Navigation2
+  - BehaviorTree
+  - Costmap
+---
+# Navigation2（Nav2）机器人导航框架
 
 > **Navigation 工程的核心**：让机器人从 A 点安全地移动到 B 点。
 > 涵盖功能：定位、全局路径规划、局部路径规划与避障、多点导航、插件式地图管理。

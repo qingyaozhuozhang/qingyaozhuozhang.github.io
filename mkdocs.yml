@@ -2,13 +2,15 @@
 # 站点基本信息 
 # ==========================================
 site_name: 镜神的知识网络
-site_description: 连接思维的节点，构建第二大脑
+site_author: qingyaozhuozhang
+site_description: 面向机器人开发的技术知识库，整理 ROS2、Nav2、Livox Mid-360、FAST-LIO、SLAM、OpenCV、YOLO、Linux、Python、C/C++ 等学习笔记与工程实践。
 
 # 部署地址：
 site_url: https://qingyaozhuozhang.github.io/
 # 源码仓库地址：
 repo_url: https://github.com/qingyaozhuozhang/qingyaozhuozhang.github.io
-repo_name: GitHub
+repo_name: qingyaozhuozhang.github.io
+edit_uri: edit/main/docs/
 
 # ==========================================
 # 主题配置 (Design by Gemini: Modern Minimalist)
@@ -21,6 +23,8 @@ theme:
 
   features:
     - navigation.tabs           # 顶级菜单栏
+    - navigation.instant        # 页面无刷新切换
+    - navigation.footer         # 页面底部上一篇/下一篇
     - navigation.tabs.sticky    # 菜单栏吸顶 (配合 CSS 实现毛玻璃)
     - navigation.sections       # 侧边栏分组
     - navigation.expand         # 默认展开
@@ -33,6 +37,7 @@ theme:
     - search.highlight          # 搜索关键词高亮
     - content.code.copy         # 代码块复制按钮
     - content.action.edit       # 页面编辑按钮
+    - content.action.view       # 查看源文件
     - content.tooltips          # 提示词支持
 
   palette:
@@ -68,14 +73,20 @@ extra_css:
 # 插件配置
 # ==========================================
 plugins:
-  - search
+  - search:
+      lang:
+        - zh
+        - en
+  - meta
+  - tags
   - git-revision-date-localized:
-      type: date             
-      locale: zh             
-      enable_creation_date: false 
-      fallback_to_build_date: true 
-  - minify:                  
+      type: date
+      locale: zh
+      enable_creation_date: false
+      fallback_to_build_date: true
+  - minify:
       minify_html: true
+
 
 # ==========================================
 # Markdown 扩展
@@ -101,21 +112,32 @@ markdown_extensions:
   - pymdownx.arithmatex:     
       generic: true
   - pymdownx.emoji:          
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 # ==========================================
 # 额外脚本
 # ==========================================
 extra_javascript:
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+# ==========================================
+# 页脚与社交链接
+# ==========================================
+copyright: Copyright &copy; 2026 qingyaozhuozhang · 镜神的知识网络
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/qingyaozhuozhang
+      name: qingyaozhuozhang on GitHub
+
 # ==========================================
 # 导航结构 (保持原有结构不变)
 # ==========================================
 nav:
   - 🏠 首页: index.md
+  - 🏷️ 标签索引: tags.md
   - 🧠 核心知识:
       - 视觉:
         - 深度学习:

@@ -1,4 +1,12 @@
-# 🐧 Linux 网课学习笔记
+---
+title: Linux 学习笔记｜Ubuntu 开发环境与常用命令
+description: Linux 与 Ubuntu 开发学习笔记，整理系统基础、环境配置、常用命令及工程开发相关知识。
+tags:
+  - Linux
+  - Ubuntu
+  - 开发环境
+---
+# Linux / Ubuntu 开发学习笔记
 
 ## 01. Linux 基础概念 & 安装 💿
 
