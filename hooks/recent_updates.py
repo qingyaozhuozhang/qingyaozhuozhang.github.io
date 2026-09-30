@@ -20,13 +20,53 @@ AUTO_BLOCK = re.compile(
     re.S,
 )
 
-# Only strip maintenance metadata when it occupies its own line.
-# This will not delete normal prose such as a Linux field description containing “修改时间”.
+# Explicit maintenance metadata on its own line is removed completely.
+# We also support the legacy two-line header that became:
+#   2026.1.26**
+#   刘志钰**
+# after older cleanup attempts.  Date/name-only lines are removed only from the
+# small header area before the first Markdown heading, so dates in normal notes
+# are not affected.
 MAINTENANCE_LINE = re.compile(
     r"(?mi)^[ \t]*(?:[-*][ \t]+)?(?:\*\*)?"
     r"(?:修改时间|更新时间|创建时间|参与者|参与人员|编辑者|维护者)"
     r"\s*[:：].*?(?:\*\*)?[ \t]*(?:\n|$)"
 )
+
+_HEADER_DATE_ONLY = re.compile(
+    r"^[ \t]*(?:\*\*)?\d{4}[./-]\d{1,2}[./-]\d{1,2}(?:\*\*)?[ \t]*$"
+)
+_HEADER_NAME_ONLY = re.compile(
+    r"^[ \t]*(?:\*\*)?(?:刘志钰)(?:\*\*)?[ \t]*$"
+)
+
+def _strip_maintenance_metadata(markdown: str) -> str:
+    """Remove maintenance-only lines, including legacy date/author headers."""
+    markdown = MAINTENANCE_LINE.sub("", markdown)
+
+    # Preserve YAML front matter, then only inspect the pre-H1 header area.
+    fm = _FRONT_MATTER.match(markdown)
+    prefix = fm.group(0) if fm else ""
+    body = markdown[len(prefix):]
+    lines = body.splitlines(keepends=True)
+
+    out = []
+    before_first_heading = True
+    for raw in lines:
+        stripped = raw.strip().replace("**", "").strip()
+        if before_first_heading and raw.lstrip().startswith("#"):
+            before_first_heading = False
+        if before_first_heading and (
+            _HEADER_DATE_ONLY.match(raw.rstrip("\r\n"))
+            or _HEADER_NAME_ONLY.match(raw.rstrip("\r\n"))
+        ):
+            continue
+        out.append(raw)
+
+    # Collapse excessive blank lines left by removed metadata.
+    cleaned = prefix + "".join(out)
+    cleaned = re.sub(r"(?m)\n{3,}", "\n\n", cleaned)
+    return cleaned
 
 _FRONT_MATTER = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.S)
 _H1 = re.compile(r"(?m)^#\s+(.+?)\s*$")
@@ -226,8 +266,9 @@ def _recent_markdown(config) -> str:
 def on_page_markdown(markdown, page, config, files):
     global _CACHE
 
-    # Hide maintenance metadata on every rendered page, including future notes.
-    markdown = MAINTENANCE_LINE.sub("", markdown)
+    # Hide maintenance metadata on every rendered page, including legacy
+    # date/name-only header lines.
+    markdown = _strip_maintenance_metadata(markdown)
 
     if getattr(page.file, "src_uri", "") == "index.md" and AUTO_BLOCK.search(markdown):
         if _CACHE is None:
