@@ -163,6 +163,7 @@ nav:
             - ROS2主流程: navigation/ROS2/导航_主线/ROS2主流程.md
             - Navigation2导航框架: navigation/ROS2/导航_主线/Navigation2导航框架.md
             - 北极熊Nav2框架: navigation/ROS2/导航_主线/北极熊Nav2框架.md
+            - chairman导航框架（实车功能框架）: navigation/ROS2/导航_主线/chairman导航框架（实车功能框架）.md
             - 决策树: navigation/ROS2/导航_主线/决策树.md
           - 导航支线:
             - ROS2基础编程: navigation/ROS2/导航_支线/ROS2基础编程.md
