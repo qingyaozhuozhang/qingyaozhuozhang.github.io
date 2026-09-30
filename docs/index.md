@@ -112,8 +112,6 @@ hide:
 
 ## 近期整理
 
-- [x] ROS 2 与 Nav2 导航知识主线
-- [x] Livox Mid-360 配置、点云与定位笔记
-- [x] OpenCV / YOLO / 深度学习学习记录
-- [x] Linux、Git 与常用工程工具
-- [ ] 持续补充机器人导航实战与问题排查案例
+<!-- AUTO_RECENT_UPDATES_START -->
+> 此区域会在 MkDocs 构建时根据 Git 提交记录自动生成，无需手动维护。
+<!-- AUTO_RECENT_UPDATES_END -->
