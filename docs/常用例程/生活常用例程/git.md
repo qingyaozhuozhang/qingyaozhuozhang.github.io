@@ -113,6 +113,6 @@
 
 11.克隆仓库内单个分支（`git clone -b 分支名 --single-branch git地址`）
 
-12.推送到远程对应分支
+12.结合vscode在本地创建新分支
 
-- `git checkout -b 分支名称（跟远程名称一样）`
+`git switch -c test --track origin/test`（基于远程`origin/test`创建本地`test`分支）
