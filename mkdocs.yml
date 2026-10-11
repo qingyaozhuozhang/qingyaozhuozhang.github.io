@@ -170,6 +170,7 @@ nav:
             - ROS2常用开发工具: navigation/ROS2/导航_支线/ROS2常用开发工具.md
             - launch文件的编写: navigation/ROS2/导航_支线/launch文件的编写.md
             - 类的封装和调用: navigation/ROS2/导航_支线/类的封装和调用.md
+            - micro_ros通信: navigation/ROS2/导航_支线/micro_ros通信.md
       - 编程:
         - python:
           - 核心基础语法: 编程/python/核心基础语法.md

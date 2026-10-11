@@ -138,8 +138,6 @@ OpenCV 是一个计算机视觉处理开源软件。
 
 **综合示例：**
 
-Python
-
 ```
 import numpy as np
 import cv2 as cv
@@ -168,8 +166,6 @@ cv.imwrite("build/guojia.png", img)
    - `LINE_AA` 代表抗锯齿线条。
 
 **示例代码：**
-
-Python
 
 ```
 import numpy
@@ -248,8 +244,6 @@ pyplot.show()
 
   - 灰度图像颜色种类有256种灰度，不是仅有黑白两种颜色，而二值化图像只有黑白两种颜色；灰度化是减少颜色信息，二值化是根据条件把像素分成两类
 
-  - 
-
   - | 图像处理任务          | 推荐方法       | 原因                       |
     | --------------------- | -------------- | -------------------------- |
     | 边缘检测（Canny）     | 灰度图         | 保留亮度变化，方便检测边缘 |
@@ -316,6 +310,8 @@ pyplot.show()
 - **API**:
   1. `M = cv.getAffineTransform(pts1, pts2)`
   2. `dst = cv.warpAffine(img, M, (cols, rows))`
+- ![](./picture/warpAffine.png)
+- 实现图像的旋转首先需要确定旋转角度和旋转中心，之后确定旋转矩阵，最终通过仿射变换实现图像旋转
 
 ### 五. 透射变换
 
@@ -323,12 +319,18 @@ pyplot.show()
 - **API**:
   1. `T = cv.getPerspectiveTransform(pts1, pts2)`
   2. `dst = cv.warpPerspective(img, T, (cols, rows))`
+- ![](./picture/warpPerspective.png)
+- 透视变换是按照物体成像投影规律进行变换，即将物体重新投影到新的成像平面
+
+**仿射变换和透视变换最大的区别是：仿射变换保持平行线仍然平行，而透视变换可以改变平行关系，能够校正近大远小的透视畸变**
 
 ### 六. 图像金字塔
 
 - **API**:
   - `cv.pyrUp(img)`: 向上采样 (扩大)
   - `cv.pyrDown(img)`: 向下采样 (缩小)
+- ![](./picture/pyramid.png)
+- 高斯金字塔（高斯滤波 → 下采样 → 得到更小的图像（也可以做上采样））和拉普拉斯金字塔（通过比较图像在相邻两个尺度下的差异，提取图像在不同尺度上丢失的细节信息（通俗理解：将原图逐渐模糊、缩小，再将缩小的图像放大，用原图减去放大后的图像，得到缩小过程中损失的细节））
 
 ------
 
@@ -557,17 +559,92 @@ pyplot.show()
 
 ------
 
-## 二十. 霍夫圆进阶笔记 📓
+## 二十.轮廓外界多边形
 
-### 一. 识别图片 (自写)
+### 一.原因：
 
-1. 转灰度
-2. 中值滤波
-3. 调参循环
+- 由于噪声和光照的影响，物体的轮廓会出现不规则的形状，根据不规则的轮廓形状不利于对图像内容进行分析，此时需要将物体的轮廓拟合成规则的几何形状，根据需求可以将图像轮廓拟合成矩形、多边形等
 
-### 二. 识别图片 (AI 辅助)
+### 二.多边形
 
-1. 转 HSV
-2. 掩码 (inRange)
-3. 轮廓查找 (findContours)
-4. 最小外接圆 (minEnclosingCircle)
+- **矩形轮廓逼近**
+
+- ![](./picture/rectangle.png)
+
+- ```
+  // 寻找轮廓的外接矩形
+  for (int n = 0; n < contours.size(); n++)
+  {
+      // 最大外接矩形（正矩形，不旋转）
+      Rect rect = boundingRect(contours[n]);
+      rectangle(img1, rect, Scalar(0, 0, 255), 2, 8, 0);
+  
+      // 最小外接旋转矩形
+      RotatedRect rrect = minAreaRect(contours[n]);
+      Point2f points[4];
+      rrect.points(points);        // 获取最小外接矩形四个顶点
+      Point2f cpt = rrect.center;  // 获取最小外接矩形中心点
+  
+      // 绘制旋转矩形四条边
+      for (int i = 0; i < 4; i++)
+      {
+          if (i == 3)
+          {
+              line(img2, points[i], points[0], Scalar(0, 255, 0), 2, 8, 0);
+              break;
+          }
+          line(img2, points[i], points[i + 1], Scalar(0, 255, 0), 2, 8, 0);
+      }
+  
+      // 绘制最小外接矩形中心点
+      circle(img, cpt, 2, Scalar(255, 0, 0), 2, 8, 0);
+  }
+  
+  ```
+
+- **多边形轮廓逼近**
+
+- ![](./picture/approxPolyDP.png)
+
+- 将原始轮廓中的大量像素点逐步替换为少量直线段，只保留那些对轮廓形状影响较大的关键点，最终形成一个近似原始轮廓的多边形
+
+- ```
+  // 绘制多边形，轮廓形状识别
+  for (int t = 0; t < contours.size(); t++)
+  {
+      // 最小外接矩形获取轮廓中心点
+      RotatedRect rrect = minAreaRect(contours[t]);
+      Point2f center = rrect.center;
+      circle(img, center, 2, Scalar(0, 255, 0), 2, 8, 0);
+  
+      Mat result;
+      approxPolyDP(contours[t], result, 4, true);  // 多边形逼近拟合
+      drawapp(result, img);
+      cout << "corners : " << result.rows << endl;
+  
+      // 根据顶点数量判断形状并标注文字
+      if (result.rows == 3)
+      {
+          putText(img, "triangle", center, 0, 1, Scalar(0, 255, 0), 1, 8);
+      }
+      if (result.rows == 4)
+      {
+          putText(img, "rectangle", center, 0, 1, Scalar(0, 255, 0), 1, 8);
+      }
+      if (result.rows == 8)
+      {
+          putText(img, "poly-8", center, 0, 1, Scalar(0, 255, 0), 1, 8);
+      }
+      if (result.rows > 12)
+      {
+          putText(img, "circle", center, 0, 1, Scalar(0, 255, 0), 1, 8);
+      }
+  }
+  ```
+
+- **Hu矩的轮廓匹配与掩膜匹配的区别**
+
+- Hu矩具有旋转、平移和比例不变性可以进行放缩图形的轮廓匹配，但是掩膜匹配只能进行归一化图形的匹配
+
+
+
