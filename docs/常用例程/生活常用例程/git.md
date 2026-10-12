@@ -116,3 +116,11 @@
 12.结合vscode在本地创建新分支
 
 `git switch -c test --track origin/test`（基于远程`origin/test`创建本地`test`分支）
+
+13.网络代理
+
+```
+git config --global http.proxy http://127.0.0.1:7897
+git config --global https.proxy https://127.0.0.1:7897
+```
+

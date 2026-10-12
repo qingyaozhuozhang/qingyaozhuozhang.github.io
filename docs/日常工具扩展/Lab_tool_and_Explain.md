@@ -1,6 +1,6 @@
 # 工具及其说明
 
-### **工具**
+### **工具链接**
 
 - urdf在线查看工具
   - https://viewer.robotsfan.com/
@@ -13,9 +13,6 @@
   - pcd-viewer（查看点云）
 
 
-
-
-### **说明**
 
 ### Rviz2
 
@@ -208,3 +205,23 @@ sudo killall -9 gzserver gzclient
 ```
 ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r /cmd_vel:=/fishbot_diff_dr
 ```
+
+
+
+### rqt
+
+ROS2的图形化工具，可以查看节点、话题、服务、TF坐标树等信息
+
+### 1.查询TF坐标树
+
+安装`tf树`插件`sudo apt install ros-humble-rqt-tf-tree`
+
+查询入口：`Plugins → Visualization → TF Tree`
+
+安装后如果没有出现：`TF Tree`
+
+```
+rqt --clear-config
+rqt --force-discover
+```
+
