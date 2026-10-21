@@ -56,6 +56,8 @@ flowchart TD
 
 图中的下位机链路表示集成关系：本工程启动 Agent 并提供 ROS 接口，实际串口连接、下位机订阅和执行依赖外部 Agent 环境及固件。
 
+![](./picture/tf_structure.png)
+
 | 层级 | 主要组成 | 职责 |
 |---|---|---|
 | 启动与交互 | `configuration`、`framework/sum.py` | 选择场地、启动进程、展示功能菜单 |

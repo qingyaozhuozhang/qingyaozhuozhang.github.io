@@ -154,6 +154,7 @@ nav:
           - git知识点: 视觉/Linux/git知识点.md
         - opencv:
           - opencv知识点: 视觉/opencv/opencv知识点.md
+          - opencv实战项目: 视觉/opencv/opencv实战项目.md
       - 导航:
         - 雷达:
           - Mid-360激光雷达配置教程: navigation/lidar/Mid-360激光雷达配置教程.md
