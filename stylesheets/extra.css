@@ -115,3 +115,134 @@
         border-radius: 18px;
     }
 }
+
+
+/* ==========================================================================
+   GitHub Pages / MkDocs Material: clean technical-documentation typography
+   Table layout uses horizontal row dividers rather than a heavy cell grid.
+   ========================================================================== */
+[data-md-color-scheme="default"] {
+    --kb-table-bg: #ffffff;
+    --kb-table-head-bg: #f3f6fc;
+    --kb-table-line: #e5eaf2;
+    --kb-table-stripe: #fafbfd;
+    --kb-table-hover: #f1f5ff;
+    --kb-table-shadow: 0 3px 14px rgba(20, 35, 65, .045);
+}
+[data-md-color-scheme="slate"] {
+    --kb-table-bg: #202531;
+    --kb-table-head-bg: #282f40;
+    --kb-table-line: rgba(212, 224, 255, .12);
+    --kb-table-stripe: rgba(255, 255, 255, .018);
+    --kb-table-hover: rgba(121, 145, 255, .09);
+    --kb-table-shadow: 0 3px 14px rgba(0, 0, 0, .14);
+}
+
+/* Wrap wide tables without forcing the article to become wider than viewport. */
+.md-typeset .md-typeset__table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 1.25em 0 1.65em;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.md-typeset table:not([class]) {
+    display: table;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--kb-table-line);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 11px;
+    overflow: hidden;
+    background: var(--kb-table-bg);
+    box-shadow: var(--kb-table-shadow);
+    font-size: .84rem;
+    line-height: 1.75;
+}
+.md-typeset table:not([class]) thead {
+    background: var(--kb-table-head-bg);
+}
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+    padding: .78em 1.15em;
+    vertical-align: middle;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    border: 0;
+    background: transparent;
+}
+.md-typeset table:not([class]) th {
+    font-weight: 700;
+    letter-spacing: .012em;
+    color: var(--md-default-fg-color);
+    border-bottom: 1px solid var(--kb-table-line);
+}
+.md-typeset table:not([class]) tbody tr + tr td {
+    border-top: 1px solid var(--kb-table-line);
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+    background: var(--kb-table-stripe);
+}
+.md-typeset table:not([class]) tbody tr:hover {
+    background: var(--kb-table-hover);
+}
+.md-typeset table:not([class]) th:first-child,
+.md-typeset table:not([class]) td:first-child {
+    min-width: 5.5em;
+}
+.md-typeset table:not([class]) th p,
+.md-typeset table:not([class]) td p {
+    margin: 0;
+}
+.md-typeset table:not([class]) td code {
+    white-space: break-spaces;
+}
+
+/* Standalone math remains visually distinct from surrounding tables/text. */
+.md-typeset div.arithmatex {
+    max-width: 100%;
+    margin: 1.25em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: .15em 0;
+}
+
+/* One cohesive code panel, no overflow into tables/side navigation. */
+.md-typeset .highlight,
+.md-typeset pre {
+    max-width: 100%;
+}
+.md-typeset .highlight pre {
+    overflow-x: auto;
+    line-height: 1.6;
+    border-radius: 10px;
+    border: 1px solid var(--kb-table-line);
+}
+
+/* Refined heading separators without turning sections into cards. */
+.md-typeset h2 {
+    margin-top: 2em;
+    padding-bottom: .38em;
+    border-bottom: 1px solid var(--kb-table-line);
+}
+.md-typeset h3 {
+    margin-top: 1.6em;
+}
+
+@media screen and (max-width: 44.9844em) {
+    .md-content {
+        padding: 1rem 1.15rem;
+        border-radius: 10px;
+    }
+    .md-typeset table:not([class]) {
+        font-size: .76rem;
+    }
+    .md-typeset table:not([class]) th,
+    .md-typeset table:not([class]) td {
+        padding: .62em .82em;
+    }
+}
