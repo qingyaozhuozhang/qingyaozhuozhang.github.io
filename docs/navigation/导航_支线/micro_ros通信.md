@@ -1,223 +1,218 @@
-# ROS2 基础编程
+---
+title: micro-ROS 通信｜Humble 构建、Agent、串口与 UDP
+description: 根据 micro-ROS/micro_ros_setup 的 humble 分支，整理单片机与 ROS 2 通信架构、编译固件和排查流程。
+tags:
+  - micro-ROS
+  - ROS2 Humble
+  - Agent
+  - STM32
+---
 
+# micro-ROS 通信：ROS 2 与单片机如何连接
 
-## (1) 面向对象编程
+> **本文所属知识点**：机器人导航 → 导航支线 → **micro-ROS 通信**。这是嵌入式与 ROS 2 之间的通信技术，涉及单片机上的 micro-ROS Client、Ubuntu 主机上的 micro-ROS Agent、串口/UDP 传输与 ROS 2 DDS 网络。
+>
+> 本篇以官方 [micro_ros_setup（Humble 分支）](https://github.com/micro-ROS/micro_ros_setup/tree/humble) 为主要依据；原文件中的 ROS 2 C++ 面向对象、lambda 和线程基础内容不属于 micro-ROS 安装与通信主线，应放到 `ROS2基础编程.md` 或 C++ 知识章节。
 
-面向对象的语言都可以创建类，所谓的类就是对事物的一种封装。
+## 1. micro-ROS 解决什么问题？
 
-```
-#include <string>
-#include "rclcpp/rclcpp.hpp"
+常规 ROS 2 主要运行在 Linux 等计算资源较丰富的设备；微控制器（MCU）通常内存小、没有完整 Linux 用户态，不能直接用 `rclcpp` 实现完全相同的通信栈。micro-ROS 将 ROS 2 API 的一部分带到资源受限设备，并通过 Agent 与 ROS 2 图连接。
 
-class PersonNode : public rclcpp::Node
-{
-private:
-    std::string name_;
-    int age_;
-
-public:
-    PersonNode(const std::string &node_name, const std::string &name, const int &age) 
-        : Node(node_name)
-    {
-        this->name_ = name;
-        this->age_ = age;
-    };
-
-    void eat(const std::string &food_name)
-    {
-        RCLCPP_INFO(this->get_logger(), "我是 %s，今年 %d 岁，我现在正在吃 %s",
-            name_.c_str(), age_, food_name.c_str());
-    };
-};
-
-int main(int argc, char **argv)
-{
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<PersonNode>("cpp_node", "法外狂徒张三", 18);
-    node->eat("鱼香ROS");
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-    return 0;
-}
+```mermaid
+flowchart LR
+    A[MCU / FreeRTOS 或 Zephyr] --> B[micro-ROS Client / rclc]
+    B --> C[串口 UART / USB / UDP]
+    C --> D[micro-ROS Agent]
+    D --> E[ROS 2 DDS 网络]
+    E --> F[Nav2 / rclcpp 节点]
 ```
 
-### 代码解释
+- **Client**：位于 MCU，创建 publisher、subscriber、timer 等。
+- **Agent**：位于运行 ROS 2 的主机，作为嵌入式 XRCE-DDS 客户端到 DDS 网络之间的桥梁。
+- **Transport**：Client 与 Agent 之间的实际数据通道（串口、网络等）。
+- **消息与话题**：ROS 2 图中仍可用 `ros2 topic list / echo / pub` 验证通信。
 
-- **`class PersonNode : public rclcpp::Node`**
-  - `:` 是继承符号，`public` 是访问说明符，`rclcpp::Node` 是基类。
-  - 标识 `PersonNode` 类以 `public` 方式继承自 `rclcpp::Node` 类。
-- **`private`**
-  - 这部分代码开始定义 `PersonNode` 类的私有成员区域，私有成员只能在类内部访问（例如可以在类的内部调用私有函数，但是不能在外部比如 `main` 函数调用私有函数，会报错）。
-- **`RCLCPP_INFO()`**
-  - 宏，用于记录一条日志信息（是 `rclcpp` 库中的）。
-- **`this->get_logger()`**
-  - `this` 是 C++ 中的一个关键字，指向当前对象（即调用成员函数的那个对象）。
-  - `get_logger()` 是 `rclcpp::Node` 类的一个成员函数，用于获取当前节点的日志记录器对象。
-- **`rclcpp::init`**
-  - 初始化 ROS2 系统。
-- **`auto node = std::make_shared<PersonNode>()`**
-  - `auto`: 类型推导关键字，当使用 `auto` 声明变量时，编译器会根据变量的初始化表达式自动推断其类型。
-  - `std::make_shared`: C++ 标准库 `<memory>` 头文件中的一个函数模板，用于在堆上分配对象并返回一个 `std::shared_ptr` 智能指针来管理该对象。
-  - **智能指针**：会自动管理所指向对象的生命周期，当没有任何 `std::shared_ptr` 指向该对象时，对象会被自动释放，从而避免了内存泄露的问题。
-  - `<PersonNode>`: 指向的是 `PersonNode` 类，不是成员函数 `PersonNode`。
-- **`rclcpp::spin(node)`**
-  - 使程序进入事件循环，等待并处理 ROS2 的各种事件，直到节点被关闭或遇到其他终止条件才会结束（例如 `ctrl+c` 中断信号）。
-- **`std`**
-  - `std::string` 可以直接使用，因为包含了 `<string>` 头文件。
-  - `std::make_shared`（定义在 `<memory>` 头文件中）可以直接使用，因为 `rclcpp/rclcpp.hpp` 这个头文件可能间接包含了 `<memory>`。
-- **`c_str()`**
-  - `std::string` 类的一个成员函数。
-  - 作用是返回一个指向以空字符 `\0` 结尾的字符数组的指针。简单来说，它把 `std::string` 对象转换为 C 风格的字符串。
-  - 注意：在使用 `RCLCPP_INFO` 等类 printf 风格函数时，`std::string` 都要使用 `.c_str()` 转换（平常使用流操作符 `<<` 则不需要）。
+## 2. 环境与硬件前提
 
-------
+以 Ubuntu 22.04 + ROS 2 Humble 为例；先保证 ROS 2 Humble 已正确安装，并且安装有 `colcon`、`rosdep`、基础构建依赖。
 
-## (2) C++ 新特性
-
-### -1 自动类型推导
-
-- 对应 Python 中的动态类型（注意：Python 的 `eval()` 是执行字符串表达式，不是类型推导）。
-- **`auto` 关键字**：可以在给变量赋值时，根据等号右边返回的类型自动推导变量的类型。
-
-### -2 智能指针
-
-可以动态分配内存，避免内存泄漏和空指针等问题。智能指针是在头文件 `<memory>` 的 `std` 命名空间中定义的。
-
-- **三种类型**：`std::unique_ptr`、`std::shared_ptr` 和 `std::weak_ptr`。
-- **原理**：该指针会记录指向同一个资源的指针数量，当数量为 0 时会自动释放内存，这样一来就不会出现提前释放或者忘记释放的情况。
-
-### -3 Lambda 表达式
-
-语法结构：
-
-```
-[capture list](parameters) -> return_type { function body }
+```bash
+source /opt/ros/humble/setup.bash
+printenv ROS_DISTRO           # 应输出 humble
+ros2 --help
 ```
 
-- Lambda 表达式是 C++11 引入的一种匿名函数，没有名字，但是也可以像正常函数一样调用。
-- `capture list`: 捕获列表，可以用于捕获外部变量。
-- `parameters`: 参数列表。
-- `return_type`: 返回值类型。
-- `function body`: 函数体。
-- **注意**：部分高级 Lambda 语法可能需要导入 algorithm 库 (`#include <algorithm>`)。
+**平台选择非常重要**：`micro_ros_setup` 的固件生成脚本依赖 RTOS 与板卡适配；不是任意 STM32/ESP32 型号都能直接使用相同编译刷写命令。先查询官方 Humble 分支的板卡支持列表和对应教程。
 
-### -4 函数包装器 `std::function`
+## 3. 安装 micro_ros_setup（官方 Humble 流程）
 
-`std::function` 是 C++11 引入的一种通用函数包装器，它可以存储任意可调用对象（函数、函数指针、Lambda 表达式等）并提供统一的调用接口。
+```bash
+source /opt/ros/humble/setup.bash
+sudo apt update
+sudo apt install -y python3-rosdep python3-colcon-common-extensions git
 
-- 头文件：`<functional>`。
-- 在外部定义的函数称为自由函数。
-
-**示例：**
-
-```
-std::function<void(const std::string &)> save3 = std::bind(&FileSave::save_with_member_fun, &file_save, std::placeholders::_1);
+mkdir -p ~/microros_ws/src
+cd ~/microros_ws
+git clone -b humble https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup
+rosdep update
+rosdep install --from-paths src --ignore-src -y
+colcon build
+source install/local_setup.bash
 ```
 
-**解释：**
+**说明**：若 `rosdep init` 已运行过，不要重复初始化；`rosdep update` 同步索引。`source install/local_setup.bash` 只影响当前终端，打开新终端需重新 source 环境。
 
-- **`std::function`**：C++ 标准库中的通用多态函数包装器，可存储、复制和调用任何可调用对象。
-- **`<void(const std::string &)>`**：模板参数，指定了所包装的可调用对象的签名（返回 void，参数为 string 引用）。
-- **`std::bind`**：将成员函数变成一个 `std::function` 的对象。
-  - 正常调用成员函数是 `对象.函数` (如 `file_save.save_with_member_fun`)。
-  - 这里用 `bind` 将成员函数 `FileSave::save_with_member_fun` 与对象 `file_save` 绑定在一起。
-- **`std::placeholders::_1`**：占位符。
-  - 预留一个位置传递函数的参数。
-  - 当调用 `save3` 时，传入的第一个参数将被转发给 `FileSave::save_with_member_fun` 函数。
-- **`&`**：通常紧跟在类型名之后，写在变量名之前（取地址或引用）。
-- **库依赖**：需要导入 `<functional>` 库才能使用。
+## 4. 固件创建 → 配置 → 编译 → 烧录
 
-------
+官方工具的阶段是固定的，但 RTOS、板卡和 transport 是**按需选择的参数**。
 
-## (3) 多线程与回调函数
-
-### Python 示例
-
-```
-import threading
-import requests
-
-class Download:
-    def download(self, url, callback):
-        print(f'线程 :{threading.get_ident()} 开始下载：{url}')
-        response = requests.get(url)
-        response.encoding = 'utf-8'
-        callback(url, response.text)
-
-    def start_download(self, url, callback):
-        thread = threading.Thread(target=self.download, args=(url, callback))
-        thread.start()
-
-def download_finish_callback(url, result):
-    print(f'{url} 下载完成，共：{len(result)} 字，内容为：{result[:5]}...')
-
-def main():
-    d = Download()
-    d.start_download('http://localhost:8000/novel1.txt', download_finish_callback)
-    d.start_download('http://localhost:8000/novel2.txt', download_finish_callback)
-    d.start_download('http://localhost:8000/novel3.txt', download_finish_callback)
-
-# 注意：thread = threading.Thread(target=self.download, args=(url, callback))
+```mermaid
+flowchart LR
+    A[create_firmware_ws.sh] --> B[configure_firmware.sh]
+    B --> C[build_firmware.sh]
+    C --> D[flash_firmware.sh]
+    D --> E[MCU 运行 Client]
 ```
 
-> **提示**：使用 `python3 -m http.server` 可以启动一个本地的 HTTP 服务器（只能找到启动该命令的文件夹里面的内容）。
+### 4.1 创建固件工作空间
 
-### C++ 示例
+下面以官方文档列举的 `FreeRTOS + Olimex STM32-E407` 作为命令示范，**不是所有 STM32 的通用模板**：
 
-```
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <functional>
-#include <cpp-httplib/httplib.h>
-
-class Download {
-public:
-    void download(const std::string &host, const std::string &path, const std::function<void(const std::string &, const std::string &)>& callback) {
-        std::cout << " 线程 ID: " << std::this_thread::get_id() << std::endl;
-        httplib::Client client(host);
-        auto response = client.Get(path);
-        if (response && response->status == 200) {
-            callback(path, response->body);
-        }
-    }
-
-    void start_download(const std::string &host, const std::string &path, const std::function<void(const std::string &, const std::string &)>& callback) {
-        auto download_fun = std::bind(&Download::download, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        std::thread download_thread(download_fun, host, path, callback);
-        download_thread.detach();
-    }
-};
-
-int main() {
-    Download download;
-    auto download_finish_callback = [](const std::string &path, const std::string &result) -> void {
-        std::cout << " 下载完成：" << path << " 共：" << result.length() << " 字，内容为：" << result.substr(0, 16) << std::endl;
-    };
-
-    download.start_download("http://localhost:8000", "/novel1.txt", download_finish_callback);
-    download.start_download("http://localhost:8000", "/novel2.txt", download_finish_callback);
-    download.start_download("http://localhost:8000", "/novel3.txt", download_finish_callback);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000 * 10));
-    return 0;
-}
+```bash
+cd ~/microros_ws
+source /opt/ros/humble/setup.bash
+source install/local_setup.bash
+ros2 run micro_ros_setup create_firmware_ws.sh freertos olimex-stm32-e407
 ```
 
-#### 关键点解释
+其他板卡先核对官方 Humble 分支的 RTOS、板卡代号，例如 `freertos esp32` 或特定 Nucleo 型号；如果当前板卡不在支持组合中，应研究其专用 component（如 STM32CubeMX/ESP-IDF 组件），而不是强行套用 Olimex 的刷写步骤。
 
-1. **`download_thread.detach()`**
-   - 将线程对象 `download_thread` 与执行的线程分离，使其能够在后台独立运行。
-2. **依赖库准备**
-   - 需要下载 C++ 的 HTTP 请求库 `cpp-httplib`，该库只需要引入头文件即可使用。
-   - 下载命令：`git clone https://gitee.com/ohhuo/cpp-httplib.git`
-   - 将下载库放在 include 目录下。
-3. **CMakeLists.txt 配置**
-   - 下载完成后，需要在 `CMakeLists.txt` 中添加 `include_directories(include)` 指令，指定 include 文件夹为头文件目录。
-4. **头文件说明**
-   - `thread`: 线程相关。
-   - `chrono`: 时间相关。
-   - `functional`: 函数包装器。
-   - `cpp-httplib/httplib.h`: 用于下载。
-5. **差异**
-   - C++ 和 Python 的字符长度统计方式不同，所以最终显示的字数可能不同。
+### 4.2 配置通信方式
+
+```bash
+ros2 run micro_ros_setup configure_firmware.sh
+```
+
+不带参数运行可以查看**当前目标平台**支持的应用/配置。随后按输出选择 app 和传输方式。官方通用选项包括 `--transport`、`--dev`、`--ip`、`--port`，但具体允许值由目标平台决定。
+
+```bash
+# 语法示意：用上一步列出的 APP 名和平台支持的选项替换占位内容
+ros2 run micro_ros_setup configure_firmware.sh <APP> --transport <serial-or-udp>
+```
+
+### 4.3 编译与刷写
+
+```bash
+ros2 run micro_ros_setup build_firmware.sh
+ros2 run micro_ros_setup flash_firmware.sh
+```
+
+刷写前确认目标板已进入正确的下载模式、USB/串口设备正常且工具链匹配；若板卡使用独立 IDE/烧录器，应遵循对应平台说明。
+
+## 5. 安装并运行 micro-ROS Agent
+
+```bash
+cd ~/microros_ws
+ros2 run micro_ros_setup create_agent_ws.sh
+ros2 run micro_ros_setup build_agent.sh
+source install/local_setup.bash
+```
+
+### 5.1 串口连接示例
+
+```bash
+ls -l /dev/serial/by-id/   # 优先按稳定设备标识核对实际串口
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 -b 115200 -v6
+```
+
+这里 `/dev/ttyUSB0`、`115200` **仅是示例**：必须与板卡实际端口和波特率匹配，部分 USB CDC 设备是 `/dev/ttyACM0`。
+
+### 5.2 UDP 连接示例
+
+```bash
+ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -v6
+```
+
+这里的 `8888` 同样是示例；MCU 必须配置 Agent 的实际 IP/端口，且网络可达、传输方式一致。
+
+## 6. MCU 发布与订阅 ROS 2 话题
+
+### 6.1 运行最小自检
+
+在 Agent 运行、MCU 固件成功启动且两端连接正常之后，开新终端：
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 topic list -t
+ros2 node list
+ros2 topic echo /example_topic
+```
+
+实际 `example_topic` 应替换为固件发布的话题。若 MCU 只订阅控制话题，可从 PC 发送**低风险测试消息**验证；避免直接向正在运行的电机发送未知速度指令。
+
+### 6.2 MCU 侧 C API 的核心结构（概念性伪代码）
+
+```c
+// 以下用于展示 rclc 结构，不是可直接编译的完整板级固件
+// 1. 设置传输层、allocator、support、node
+// 2. 创建 publisher / subscription
+// 3. 初始化 executor，注册 callback
+// 4. 在循环中调用 rclc_executor_spin_some(...)
+// 5. 检查每个初始化/发布调用的返回值
+```
+
+micro-ROS 固件需要板级时钟、传输初始化、消息内存管理、executor 和 RTOS 配置。**不能直接将 Linux 上的 rclcpp C++ 节点复制到单片机运行**。
+
+## 7. 真实故障排查：其他 ROS 2 节点一启动，MCU 就无法收到消息
+
+这种现象**不能直接归因于 ROS_DOMAIN_ID**。应按“物理链路 → Agent → ROS 2 图 → QoS/接口 → MCU 执行器”逐层定位。
+
+```mermaid
+flowchart TD
+    A[MCU 无法接收] --> B[Agent 是否显示 Client 会话?]
+    B -->|否| C[检查串口/UDP、供电、端口、波特率]
+    B -->|是| D[ros2 topic list 能看到话题?]
+    D -->|否| E[检查 Agent 环境与 Domain ID]
+    D -->|是| F[topic info -v: 类型、QoS 是否匹配?]
+    F -->|否| G[修正接口、可靠性、深度、Domain]
+    F -->|是| H[MCU executor 是否持续 spin?]
+    H -->|否| I[检查任务阻塞、栈与回调]
+    H -->|是| J[检查接收处理和应用逻辑]
+```
+
+```bash
+printenv ROS_DOMAIN_ID
+ros2 node list
+ros2 topic info /speed_heading -v  # 请换成实际话题名
+ros2 topic hz /speed_heading
+```
+
+**容易混淆的四点**：
+
+1. Agent 连接成功 **≠** ROS 2 话题已经在正确的 Domain 出现。
+2. topic 名相同 **≠** 消息类型和 QoS 一定兼容。
+3. 接收到传输帧 **≠** 订阅回调一定及时执行，MCU 的 executor 可能被阻塞。
+4. Domain ID 隔离解决的是 DDS 域的划分，**不会修复串口冲突、Agent 重启、应用逻辑错误**。
+
+## 8. 常用故障表
+
+| 现象 | 常见原因 | 验证方式 |
+| --- | --- | --- |
+| Agent 无 Client 连接 | 串口设备错误、权限、波特率、UDP 不通 | Agent `-v6` 日志、`ls /dev`、网络抓包 |
+| Agent 正常、topic 不见 | 节点未初始化、Domain 不一致 | `ros2 node list`、环境变量 |
+| 能看到话题却收不到 | 消息类型/QoS 不兼容 | `ros2 topic info -v` |
+| 偶发丢消息 | 网络、缓冲区、executor 处理不及时 | 统计发布/接收速率与错误码 |
+| 一启动其他节点就异常 | 资源竞争、单片机任务阻塞、重复 Agent 或共享通信口 | 逐步启动并记录日志 |
+
+## 9. 从学习到实车的验证顺序
+
+1. **先 Host/示例固件**：确认 micro-ROS Client 与 Agent 可以通。
+2. **再裸数据话题**：单向发布与订阅；确认 topic、类型、QoS、Domain。
+3. **再接控制链**：为消息增加超时保护，长时间未收到控制指令时进入安全状态。
+4. **最后实车测试**：低速、空载，记录 Agent/MCU/ROS 2 三端时间戳和丢包情况。
+
+**官方资料**：
+
+- [micro_ros_setup：Humble 分支](https://github.com/micro-ROS/micro_ros_setup/tree/humble)
+- [Humble README：构建与 Agent 命令](https://github.com/micro-ROS/micro_ros_setup/blob/humble/README.md)
+- [micro-ROS 构建系统概念](https://micro.vulcanexus.org/docs/concepts/build_system/)
