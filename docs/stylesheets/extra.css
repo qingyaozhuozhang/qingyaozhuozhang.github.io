@@ -1,0 +1,248 @@
+/* ==========================================================================
+   Gemini Premium Design System for MkDocs
+   Theme: Modern Minimalist
+   ========================================================================= */
+
+:root {
+    --card-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04); --card-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --card-radius: 16px; --transition-speed: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+[data-md-color-scheme="default"] {
+    --md-default-bg-color: #f2f4f7; --md-main-bg-color: #ffffff; --glass-bg: rgba(255, 255, 255, 0.85); --border-color: rgba(0, 0, 0, 0.06); --heading-border: linear-gradient(to right, var(--md-accent-fg-color), transparent);
+}
+[data-md-color-scheme="slate"] {
+    --md-default-bg-color: #0b0e14; --md-main-bg-color: #1e2129; --glass-bg: rgba(30, 33, 41, 0.85); --border-color: rgba(255, 255, 255, 0.06); --heading-border: linear-gradient(to right, var(--md-accent-fg-color), transparent);
+}
+
+.md-header { background-color: var(--glass-bg) !important; backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--border-color); }
+[data-md-color-scheme="default"] .md-header { color: #1a1a1a; }
+.md-search__input { background-color: rgba(0,0,0,0.05) !important; }
+@media screen and (min-width: 76.25em) { .md-main__inner { display: flex; gap: 1.5rem; max-width: 1400px; margin: 0 auto; } }
+.md-content, .md-sidebar__scrollwrap { background-color: var(--md-main-bg-color); border-radius: var(--card-radius); box-shadow: var(--card-shadow-sm); border: 1px solid var(--border-color); transition: var(--transition-speed); }
+.md-content { padding: 2.5rem 3rem; margin-bottom: 2rem; }
+@media screen and (min-width: 60em) {
+    .md-sidebar { height: fit-content; }
+    .md-sidebar__scrollwrap { padding: 1rem; margin: 0; max-height: calc(100vh - 7rem); }
+    .md-sidebar:hover .md-sidebar__scrollwrap, .md-content:hover { box-shadow: var(--card-shadow-md); border-color: var(--md-accent-fg-color); }
+}
+.md-typeset h1 { font-weight: 800; color: var(--md-accent-fg-color); border-bottom: 2px solid transparent; border-image: var(--heading-border) 1; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+.md-typeset a { color: var(--md-accent-fg-color); text-decoration: none; transition: 0.2s; border-bottom: 1px solid transparent; }
+.md-typeset a:hover { border-bottom-color: var(--md-accent-fg-color); }
+.highlight pre { border-radius: 12px; box-shadow: var(--card-shadow-sm); border: 1px solid var(--border-color); margin-top: 1rem;}
+.md-typeset .admonition { border: none; border-left: 4px solid var(--md-accent-fg-color); background-color: rgba(127, 127, 127, 0.04); border-radius: 8px; }
+
+/* ==========================================================================
+   镜神的知识网络：首页视觉增强
+   ========================================================================== */
+.jingshen-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2rem, 5vw, 4.2rem);
+    margin: 0 0 2.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.22), transparent 34%),
+        radial-gradient(circle at 15% 85%, rgba(14, 165, 233, 0.16), transparent 30%),
+        var(--md-main-bg-color);
+    box-shadow: var(--card-shadow-md);
+}
+
+.jingshen-hero::after {
+    content: "";
+    position: absolute;
+    width: 15rem;
+    height: 15rem;
+    right: -5rem;
+    bottom: -7rem;
+    border-radius: 50%;
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    box-shadow:
+        0 0 0 2rem rgba(99, 102, 241, 0.05),
+        0 0 0 4rem rgba(14, 165, 233, 0.035);
+    pointer-events: none;
+}
+
+.jingshen-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.jingshen-eyebrow {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    opacity: 0.65;
+}
+
+.md-typeset .jingshen-hero h1 {
+    margin: 0 0 0.7rem;
+    padding: 0;
+    border: 0;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.08;
+    color: var(--md-default-fg-color);
+}
+
+.jingshen-hero > p {
+    max-width: 52rem;
+    font-size: 1.02rem;
+    line-height: 1.85;
+}
+
+.jingshen-hero .md-button {
+    margin-top: 0.7rem;
+    margin-right: 0.45rem;
+    border-radius: 999px;
+}
+
+.md-typeset .grid.cards > ul > li {
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-md);
+}
+
+@media screen and (max-width: 44.9844em) {
+    .jingshen-hero {
+        padding: 1.6rem;
+        border-radius: 18px;
+    }
+}
+
+
+/* ==========================================================================
+   GitHub Pages / MkDocs Material: clean technical-documentation typography
+   Table layout uses horizontal row dividers rather than a heavy cell grid.
+   ========================================================================== */
+[data-md-color-scheme="default"] {
+    --kb-table-bg: #ffffff;
+    --kb-table-head-bg: #f3f6fc;
+    --kb-table-line: #e5eaf2;
+    --kb-table-stripe: #fafbfd;
+    --kb-table-hover: #f1f5ff;
+    --kb-table-shadow: 0 3px 14px rgba(20, 35, 65, .045);
+}
+[data-md-color-scheme="slate"] {
+    --kb-table-bg: #202531;
+    --kb-table-head-bg: #282f40;
+    --kb-table-line: rgba(212, 224, 255, .12);
+    --kb-table-stripe: rgba(255, 255, 255, .018);
+    --kb-table-hover: rgba(121, 145, 255, .09);
+    --kb-table-shadow: 0 3px 14px rgba(0, 0, 0, .14);
+}
+
+/* Wrap wide tables without forcing the article to become wider than viewport. */
+.md-typeset .md-typeset__table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 1.25em 0 1.65em;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.md-typeset table:not([class]) {
+    display: table;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--kb-table-line);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 11px;
+    overflow: hidden;
+    background: var(--kb-table-bg);
+    box-shadow: var(--kb-table-shadow);
+    font-size: .84rem;
+    line-height: 1.75;
+}
+.md-typeset table:not([class]) thead {
+    background: var(--kb-table-head-bg);
+}
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+    padding: .78em 1.15em;
+    vertical-align: middle;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    border: 0;
+    background: transparent;
+}
+.md-typeset table:not([class]) th {
+    font-weight: 700;
+    letter-spacing: .012em;
+    color: var(--md-default-fg-color);
+    border-bottom: 1px solid var(--kb-table-line);
+}
+.md-typeset table:not([class]) tbody tr + tr td {
+    border-top: 1px solid var(--kb-table-line);
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+    background: var(--kb-table-stripe);
+}
+.md-typeset table:not([class]) tbody tr:hover {
+    background: var(--kb-table-hover);
+}
+.md-typeset table:not([class]) th:first-child,
+.md-typeset table:not([class]) td:first-child {
+    min-width: 5.5em;
+}
+.md-typeset table:not([class]) th p,
+.md-typeset table:not([class]) td p {
+    margin: 0;
+}
+.md-typeset table:not([class]) td code {
+    white-space: break-spaces;
+}
+
+/* Standalone math remains visually distinct from surrounding tables/text. */
+.md-typeset div.arithmatex {
+    max-width: 100%;
+    margin: 1.25em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: .15em 0;
+}
+
+/* One cohesive code panel, no overflow into tables/side navigation. */
+.md-typeset .highlight,
+.md-typeset pre {
+    max-width: 100%;
+}
+.md-typeset .highlight pre {
+    overflow-x: auto;
+    line-height: 1.6;
+    border-radius: 10px;
+    border: 1px solid var(--kb-table-line);
+}
+
+/* Refined heading separators without turning sections into cards. */
+.md-typeset h2 {
+    margin-top: 2em;
+    padding-bottom: .38em;
+    border-bottom: 1px solid var(--kb-table-line);
+}
+.md-typeset h3 {
+    margin-top: 1.6em;
+}
+
+@media screen and (max-width: 44.9844em) {
+    .md-content {
+        padding: 1rem 1.15rem;
+        border-radius: 10px;
+    }
+    .md-typeset table:not([class]) {
+        font-size: .76rem;
+    }
+    .md-typeset table:not([class]) th,
+    .md-typeset table:not([class]) td {
+        padding: .62em .82em;
+    }
+}
